@@ -7,8 +7,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface ValidationRepository extends JpaRepository<Validation, String>, PagingAndSortingRepository<Validation, String> {
+public interface ValidationRepository extends JpaRepository<Validation, Long>, PagingAndSortingRepository<Validation, Long> {
     Optional<Validation> findByCode(String code);
     Optional<Validation> findByField(String field);
-    List<Validation> findByFieldIgnoreCaseContaining(String field);
+    List<Validation> findByFieldStartsWith(String field);
 }

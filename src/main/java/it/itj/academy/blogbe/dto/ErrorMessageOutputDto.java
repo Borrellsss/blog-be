@@ -10,5 +10,5 @@ import lombok.*;
 public class ErrorMessageOutputDto {
     private String errorType;
     private String message;
-    private String validation;
+    private String validationCode;
 }

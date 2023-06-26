@@ -12,9 +12,11 @@ import java.util.List;
 @Setter
 @ToString
 public class ValidationOutputDto {
+    private Long id;
     private String code;
     private String field;
-    private boolean nullable = true;
+    private boolean notNull;
+    private boolean notEmpty;
     private Integer min;
     private Integer max;
     private String regex;

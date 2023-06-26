@@ -13,7 +13,7 @@ public class DBFiller {
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        roleFiller.fillRoles();
-        userFiller.fillUsers();
+//        roleFiller.fillRoles();
+//        userFiller.fillUsers();
     }
 }

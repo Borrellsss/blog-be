@@ -10,13 +10,12 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = "validations")
+@ToString(exclude = "validation")
 @EntityListeners(value = {
     GlobalAuditListener.class
 })
@@ -47,7 +46,8 @@ public class ErrorMessage {
     @JoinColumn(name = "validation_code", nullable = false)
     private Validation validation;
 
-    public ErrorMessage(String message, Validation validation) {
+    public ErrorMessage(String errorType, String message, Validation validation) {
+        this.errorType = errorType;
         this.message = message;
         this.validation = validation;
     }

@@ -10,7 +10,8 @@ import lombok.*;
 public class ValidationInputDto {
     private String code;
     private String field;
-    private boolean nullable = true;
+    private boolean notNull;
+    private boolean notEmpty;
     private Integer min;
     private Integer max;
     private String regex;
@@ -25,10 +26,11 @@ public class ValidationInputDto {
         this.min = min;
         this.max = max;
     }
-    public ValidationInputDto(String code, String field, boolean nullable, Integer min, Integer max, Byte minUpperCaseLetters, Byte minLowerCaseLetters, Byte minDigits, Byte minSpecialCharacters) {
+    public ValidationInputDto(String code, String field, boolean notNull, boolean notEmpty, Integer min, Integer max, Byte minUpperCaseLetters, Byte minLowerCaseLetters, Byte minDigits, Byte minSpecialCharacters) {
         this.code = code;
         this.field = field;
-        this.nullable = nullable;
+        this.notNull = notNull;
+        this.notEmpty = notEmpty;
         this.min = min;
         this.max = max;
         this.minUpperCaseLetters = minUpperCaseLetters;

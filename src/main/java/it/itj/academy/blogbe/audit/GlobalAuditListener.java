@@ -77,15 +77,11 @@ public class GlobalAuditListener {
             setter.invoke(entity, getter.invoke(entity));
         } else {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            System.err.println(entity);
-            System.err.println(principal.getId());
-            System.err.println("SETTER: " + setter);
             setter.invoke(entity, principal.getId());
         }
     }
     private Method getSetter(Object entity, Field field) throws NoSuchMethodException {
         String setter = "set" + Character.toUpperCase(field.getName().charAt(0)) + field.getName().substring(1);
-        System.err.println(getClazz(entity).getDeclaredMethod(setter, field.getType()));
         return getClazz(entity).getDeclaredMethod(setter, field.getType());
     }
     private Method getGetter(Object entity, Field field) throws NoSuchMethodException {

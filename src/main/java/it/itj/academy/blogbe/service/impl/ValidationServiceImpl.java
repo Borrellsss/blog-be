@@ -47,7 +47,6 @@ public class ValidationServiceImpl implements ValidationService {
         }
         return true;
     }
-
     @Override
     public ValidationOutputDto create(ValidationInputDto validationInputDto) {
         if (!isFieldValid(validationInputDto.getField())) {
@@ -57,8 +56,8 @@ public class ValidationServiceImpl implements ValidationService {
         if (validationInputDto.getCode() == null) {
             errors.put("code", "Validation code cannot be null");
         } else {
-            if (validationInputDto.getCode().length() > 10) {
-                errors.put("code", "Validation code cannot be greater than 10 characters");
+            if (validationInputDto.getCode().length() > 8) {
+                errors.put("code", "Validation code cannot be greater than 8 characters");
             }
             if (validationRepository.findByCode(validationInputDto.getCode()).isPresent()) {
                 errors.put("code", "Validation code already exists");
@@ -97,6 +96,12 @@ public class ValidationServiceImpl implements ValidationService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Validation> validations = validationRepository.findAll(pageable);
         return pageableUtil.validationPageableOutputDto(validations);
+    }
+    @Override
+    public ValidationOutputDto readById(Long id) {
+        Validation validation = validationRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Validation with id %d not found", id)));
+        return modelMapper.map(validation, ValidationOutputDto.class);
     }
     @Override
     public ValidationOutputDto readByCode(String code) {
@@ -162,7 +167,8 @@ public class ValidationServiceImpl implements ValidationService {
         }
         validation.setCode(validationInputDto.getCode());
         validation.setField(validationInputDto.getField());
-        validation.setNullable(validationInputDto.isNullable());
+        validation.setNotNull(validationInputDto.isNotNull());
+        validation.setNotEmpty(validationInputDto.isNotEmpty());
         validation.setMin(validationInputDto.getMin());
         validation.setMax(validationInputDto.getMax());
         validation.setRegex(validationInputDto.getRegex());

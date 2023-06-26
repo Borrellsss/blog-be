@@ -34,7 +34,7 @@ public class ValidationController {
     public ResponseEntity<ValidationOutputDto> readByCode(@PathVariable String code) {
         return new ResponseEntity<>(validationService.readByCode(code), HttpStatus.OK);
     }
-    @GetMapping(value = "/username/{username}")
+    @GetMapping(value = "/field/{field}")
     public ResponseEntity<ValidationOutputDto> readByFiled(@PathVariable String field) {
         return new ResponseEntity<>(validationService.readByFiled(field), HttpStatus.OK);
     }

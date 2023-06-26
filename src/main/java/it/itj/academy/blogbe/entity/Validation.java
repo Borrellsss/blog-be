@@ -25,12 +25,16 @@ import java.util.List;
 @Table(name = "validation")
 public class Validation {
     @Id
-    @Column(length = 10)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(nullable = false, unique = true, columnDefinition = "CHAR(8)")
     private String code;
     @Column(length = 100, nullable = false, unique = true)
     private String field;
-    @Column(nullable = false)
-    private boolean nullable = true;
+    @Column(name = "not_null", nullable = false)
+    private boolean notNull = false;
+    @Column(name = "not_empty", nullable = false)
+    private boolean notEmpty = false;
     private Integer min;
     private Integer max;
     @Column(columnDefinition = "TEXT")
@@ -58,16 +62,15 @@ public class Validation {
     @OneToMany(mappedBy = "validation", cascade = CascadeType.ALL)
     private List<ErrorMessage> errorMessages = new ArrayList<>();
 
-    public Validation(String code, String field, Integer min, Integer max) {
-        this.code = code;
+    public Validation(String field, Integer min, Integer max) {
         this.field = field;
         this.min = min;
         this.max = max;
     }
-    public Validation(String code, String field, Boolean nullable, Integer min, Integer max, Byte minUpperCaseLetters, Byte minLowerCaseLetters, Byte minDigits, Byte minSpecialCharacters) {
-        this.code = code;
+    public Validation(String field, boolean notNull, boolean notEmpty, Integer min, Integer max, Byte minUpperCaseLetters, Byte minLowerCaseLetters, Byte minDigits, Byte minSpecialCharacters) {
         this.field = field;
-        this.nullable = nullable;
+        this.notNull = notNull;
+        this.notEmpty = notEmpty;
         this.min = min;
         this.max = max;
         this.minUpperCaseLetters = minUpperCaseLetters;
@@ -75,10 +78,10 @@ public class Validation {
         this.minDigits = minDigits;
         this.minSpecialCharacters = minSpecialCharacters;
     }
-    public Validation(String code, String field, Boolean nullable, Integer min, Integer max, String regex, Byte minUpperCaseLetters, Byte minLowerCaseLetters, Byte minDigits, Byte minSpecialCharacters) {
-        this.code = code;
+    public Validation(String field, boolean notNull, boolean notEmpty, Integer min, Integer max, String regex, Byte minUpperCaseLetters, Byte minLowerCaseLetters, Byte minDigits, Byte minSpecialCharacters) {
         this.field = field;
-        this.nullable = nullable;
+        this.notNull = notNull;
+        this.notEmpty = notEmpty;
         this.min = min;
         this.max = max;
         this.regex = regex;

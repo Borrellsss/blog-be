@@ -6,7 +6,7 @@ spring:
     password: Hooligan1995
   jpa:
     hibernate:
-      ddl-auto: update
+#      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -27,11 +27,12 @@ springdoc:
     path: "/swagger-ui.html"
 validation:
   type:
-    not-null: "NOT_NULL"
+    not-null: "NOT-NULL"
+    not-empty: "NOT-EMPTY"
     min: "MIN"
     max: "MAX"
     regex: "REGEX"
-    min-uppercase-letters: "MIN_UPPERCASE_LETTERS"
-    min-lowercase-letters: "MIN_LOWERCASE_LETTERS"
-    min-digits: "MIN_DIGITS"
-    min-special-characters: "MIN_SPECIAL_CHARACTERS"
+    min-uppercase-letters: "MIN-UPPERCASE-LETTERS"
+    min-lowercase-letters: "MIN-LOWERCASE-LETTERS"
+    min-digits: "MIN-DIGITS"
+    min-special-characters: "MIN-SPECIAL-CHARACTERS"
