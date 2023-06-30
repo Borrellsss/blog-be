@@ -11,7 +11,7 @@ public interface CategoryService {
     CategoryPageableOutputDto readAll(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
     CategoryOutputDto readById(Long id);
     CategoryOutputDto readByName(String name);
-    CategoryPageableOutputDto findByNameContains(String name, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+    CategoryPageableOutputDto readByNameContains(String name, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
     CategoryOutputDto update(Long id, CategoryInputDto categoryInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
     void delete(Long id);
 }

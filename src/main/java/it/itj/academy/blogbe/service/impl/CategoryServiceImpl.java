@@ -67,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
         return modelMapper.map(category, CategoryOutputDto.class);
     }
     @Override
-    public CategoryPageableOutputDto findByNameContains(String name, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public CategoryPageableOutputDto readByNameContains(String name, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Pageable pageable = PageRequest.of(page, size);
         Page<Category> categories = categoryRepository.findByNameContains(name, pageable);
         CategoryPageableOutputDto categoryPageableOutputDto = pageableUtil.categoryPageableOutputDto(categories);
@@ -82,7 +82,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
         Category category = categoryRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Category with id (%s) not found", id)));
-        if (!category.getName().equals(categoryInputDto.getName()) && categoryRepository.findByName(categoryInputDto.getName()).isPresent()) {
+        if (!category.getName().equals(categoryInputDto.getName()) && categoryRepository.existsByName(categoryInputDto.getName())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Category with name (%s) already exists", categoryInputDto.getName()));
         }
         category.setName(categoryInputDto.getName());

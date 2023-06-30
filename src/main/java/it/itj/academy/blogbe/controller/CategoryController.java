@@ -22,30 +22,34 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final int PAGE_SIZE = 20;
 
+    // INSERT
     @PostMapping
     public ResponseEntity<CategoryOutputDto> create(@RequestBody CategoryInputDto categoryInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         return new ResponseEntity<>(categoryService.create(categoryInputDto), HttpStatus.CREATED);
     }
+    // SELECT
     @GetMapping
     public ResponseEntity<CategoryPageableOutputDto> readAll(@RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         return new ResponseEntity<>(categoryService.readAll(page, pageable.getPageSize()), HttpStatus.OK);
     }
     @GetMapping(value = "/{id}")
-    public ResponseEntity<CategoryOutputDto> findById(@PathVariable Long id) {
+    public ResponseEntity<CategoryOutputDto> readById(@PathVariable Long id) {
         return new ResponseEntity<>(categoryService.readById(id), HttpStatus.OK);
     }
     @GetMapping(value = "/name/{name}")
-    public ResponseEntity<CategoryOutputDto> findByName(@PathVariable String name) {
+    public ResponseEntity<CategoryOutputDto> readByName(@PathVariable String name) {
         return new ResponseEntity<>(categoryService.readByName(name), HttpStatus.OK);
     }
     @GetMapping(value = "/like")
-    public ResponseEntity<CategoryPageableOutputDto> findByNameContains(@RequestParam String name, @RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        return new ResponseEntity<>(categoryService.findByNameContains(name, page, pageable.getPageSize()), HttpStatus.OK);
+    public ResponseEntity<CategoryPageableOutputDto> readByNameContains(@RequestParam String name, @RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        return new ResponseEntity<>(categoryService.readByNameContains(name, page, pageable.getPageSize()), HttpStatus.OK);
     }
+    // UPDATE
     @PutMapping(value = "/{id}")
     public ResponseEntity<CategoryOutputDto> update(@PathVariable Long id, @RequestBody CategoryInputDto categoryInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         return new ResponseEntity<>(categoryService.update(id, categoryInputDto), HttpStatus.OK);
     }
+    // DELETE
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         categoryService.delete(id);

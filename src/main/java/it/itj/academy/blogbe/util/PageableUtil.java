@@ -1,10 +1,7 @@
 package it.itj.academy.blogbe.util;
 
 import it.itj.academy.blogbe.dto.output.*;
-import it.itj.academy.blogbe.entity.Category;
-import it.itj.academy.blogbe.entity.ErrorMessage;
-import it.itj.academy.blogbe.entity.User;
-import it.itj.academy.blogbe.entity.Validation;
+import it.itj.academy.blogbe.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -71,6 +68,19 @@ public class PageableUtil {
             return categoryPageableOutputDto;
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Categories not found");
+        }
+    }
+    public TagPageableOutputDto tagPageableOutputDto(Page<Tag> tags) {
+        if (tags.hasContent()) {
+            TagPageableOutputDto tagPageableOutputDto = new TagPageableOutputDto();
+            tagPageableOutputDto.setTags(tags.stream()
+                .map(tag -> modelMapper.map(tag, TagOutputDto.class))
+                .toList());
+            tagPageableOutputDto.setTotalPages(tags.getTotalPages());
+            tagPageableOutputDto.setTotalElements(tags.getTotalElements());
+            return tagPageableOutputDto;
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tags not found");
         }
     }
 }
