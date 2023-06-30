@@ -1,7 +1,7 @@
 package it.itj.academy.blogbe.service;
 
-import it.itj.academy.blogbe.dto.RoleInputDto;
-import it.itj.academy.blogbe.dto.RoleOutputDto;
+import it.itj.academy.blogbe.dto.input.RoleInputDto;
+import it.itj.academy.blogbe.dto.output.RoleOutputDto;
 
 import java.util.List;
 

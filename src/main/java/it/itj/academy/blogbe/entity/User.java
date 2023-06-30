@@ -10,13 +10,14 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"posts", "votes"})
 @EntityListeners(value = {
     GlobalAuditListener.class
 })
@@ -62,6 +63,10 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<Role> roles;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<Post> posts = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Vote> votes = new ArrayList<>();
 
     public User(String firstName, String lastName, Byte age, String email, String username, String password, List<Role> roles) {
         this.firstName = firstName;

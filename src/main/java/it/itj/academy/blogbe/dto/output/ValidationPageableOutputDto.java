@@ -1,4 +1,4 @@
-package it.itj.academy.blogbe.dto;
+package it.itj.academy.blogbe.dto.output;
 
 import lombok.*;
 
@@ -9,8 +9,8 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class UserPageableOutputDto {
-    private List<UserOutputDto> users;
+public class ValidationPageableOutputDto {
+    private List<ValidationOutputDto> validations;
     private int totalPages;
     private long totalElements;
 }

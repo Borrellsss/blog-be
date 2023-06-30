@@ -1,7 +1,13 @@
 package it.itj.academy.blogbe.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import it.itj.academy.blogbe.dto.*;
+import it.itj.academy.blogbe.dto.input.LoginInputDto;
+import it.itj.academy.blogbe.dto.input.RegisterInputDto;
+import it.itj.academy.blogbe.dto.input.UserInputDto;
+import it.itj.academy.blogbe.dto.output.LoginOutputDto;
+import it.itj.academy.blogbe.dto.output.RegisterOutputDto;
+import it.itj.academy.blogbe.dto.output.UserOutputDto;
+import it.itj.academy.blogbe.dto.output.UserPageableOutputDto;
 import it.itj.academy.blogbe.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,11 +42,11 @@ public class UserController {
         return new ResponseEntity<>(userService.readAll(page, pageable.getPageSize()), HttpStatus.OK);
     }
     @GetMapping(value = "/{id}")
-    public ResponseEntity<UserOutputDto> readById(@PathVariable Long id) {
+    public ResponseEntity<UserOutputDto> readById(@PathVariable Long id) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         return new ResponseEntity<>(userService.readById(id), HttpStatus.OK);
     }
     @GetMapping(value = "/username/{username}")
-    public ResponseEntity<UserOutputDto> readByUsername(@PathVariable String username) {
+    public ResponseEntity<UserOutputDto> readByUsername(@PathVariable String username) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         return new ResponseEntity<>(userService.readByUsername(username), HttpStatus.OK);
     }
     // UPDATE

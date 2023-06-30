@@ -1,8 +1,8 @@
 package it.itj.academy.blogbe.controller;
 
-import it.itj.academy.blogbe.dto.ValidationInputDto;
-import it.itj.academy.blogbe.dto.ValidationOutputDto;
-import it.itj.academy.blogbe.dto.ValidationPageableOutputDto;
+import it.itj.academy.blogbe.dto.input.ValidationInputDto;
+import it.itj.academy.blogbe.dto.output.ValidationOutputDto;
+import it.itj.academy.blogbe.dto.output.ValidationPageableOutputDto;
 import it.itj.academy.blogbe.service.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +35,8 @@ public class ValidationController {
         return new ResponseEntity<>(validationService.readByCode(code), HttpStatus.OK);
     }
     @GetMapping(value = "/field/{field}")
-    public ResponseEntity<ValidationOutputDto> readByFiled(@PathVariable String field) {
-        return new ResponseEntity<>(validationService.readByFiled(field), HttpStatus.OK);
+    public ResponseEntity<ValidationOutputDto> readByField(@PathVariable String field) {
+        return new ResponseEntity<>(validationService.readByField(field), HttpStatus.OK);
     }
     // UPDATE
     @PutMapping(value = "/{code}")

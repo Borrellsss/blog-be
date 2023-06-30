@@ -10,7 +10,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +18,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Slf4j
-@Component
 public class GlobalAuditListener {
     @PrePersist
     public void prePersist(Object entity) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -38,34 +36,32 @@ public class GlobalAuditListener {
     }
     private void setCreatedDate(Object entity) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Class<?> clazz = getClazz(entity);
-        for(Field field : clazz.getDeclaredFields()) {
-            if(field.getAnnotation(CreatedDate.class) != null) {
-                if (getGetter(entity, field).invoke(entity) == null) {
-                    getSetter(entity, field).invoke(entity, LocalDate.now());
-                }
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getAnnotation(CreatedDate.class) != null && getGetter(entity, field).invoke(entity) == null) {
+                getSetter(entity, field).invoke(entity, LocalDate.now());
             }
         }
     }
     private void setLastModifiedDate(Object entity) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Class<?> clazz = getClazz(entity);
-        for(Field field : clazz.getDeclaredFields()) {
-            if(field.getAnnotation(LastModifiedDate.class) != null) {
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getAnnotation(LastModifiedDate.class) != null) {
                 getSetter(entity, field).invoke(entity, LocalDateTime.now());
             }
         }
     }
     private void setCreatedBy(Object entity) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         Class<?> clazz = getClazz(entity);
-        for(Field field : clazz.getDeclaredFields()) {
-            if(field.getAnnotation(CreatedBy.class) != null) {
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getAnnotation(CreatedBy.class) != null && getGetter(entity, field).invoke(entity) == null) {
                 setPrincipalOrUserId(entity, getSetter(entity, field));
             }
         }
     }
     private void setLastModifiedBy(Object entity) throws NoSuchMethodException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
         Class<?> clazz = getClazz(entity);
-        for(Field field : clazz.getDeclaredFields()) {
-            if(field.getAnnotation(LastModifiedBy.class) != null) {
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getAnnotation(LastModifiedBy.class) != null && getGetter(entity, field).invoke(entity) == null) {
                 setPrincipalOrUserId(entity, getSetter(entity, field));
             }
         }
@@ -80,13 +76,13 @@ public class GlobalAuditListener {
             setter.invoke(entity, principal.getId());
         }
     }
-    private Method getSetter(Object entity, Field field) throws NoSuchMethodException {
-        String setter = "set" + Character.toUpperCase(field.getName().charAt(0)) + field.getName().substring(1);
-        return getClazz(entity).getDeclaredMethod(setter, field.getType());
-    }
     private Method getGetter(Object entity, Field field) throws NoSuchMethodException {
         String getter = "get" + Character.toUpperCase(field.getName().charAt(0)) + field.getName().substring(1);
         return getClazz(entity).getDeclaredMethod(getter);
+    }
+    private Method getSetter(Object entity, Field field) throws NoSuchMethodException {
+        String setter = "set" + Character.toUpperCase(field.getName().charAt(0)) + field.getName().substring(1);
+        return getClazz(entity).getDeclaredMethod(setter, field.getType());
     }
     private Class<?> getClazz(Object entity) {
         return entity.getClass();

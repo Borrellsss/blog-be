@@ -10,10 +10,14 @@ import org.springframework.stereotype.Component;
 public class DBFiller {
     private final RoleFiller roleFiller;
     private final UserFiller userFiller;
+    private final CategoryFiller categoryFiller;
+    private final TagFiller tagFiller;
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
 //        roleFiller.fillRoles();
 //        userFiller.fillUsers();
+//        categoryFiller.fillCategories();
+//        tagFiller.fillTags();
     }
 }

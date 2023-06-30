@@ -32,9 +32,9 @@ public class Validation {
     @Column(length = 100, nullable = false, unique = true)
     private String field;
     @Column(name = "not_null", nullable = false)
-    private boolean notNull = false;
+    private Boolean notNull = false;
     @Column(name = "not_empty", nullable = false)
-    private boolean notEmpty = false;
+    private Boolean notEmpty = false;
     private Integer min;
     private Integer max;
     @Column(columnDefinition = "TEXT")
@@ -59,7 +59,7 @@ public class Validation {
     @LastModifiedDate
     private LocalDateTime updatedAt;
     // RELATIONSHIPS
-    @OneToMany(mappedBy = "validation", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "validation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ErrorMessage> errorMessages = new ArrayList<>();
 
     public Validation(String field, Integer min, Integer max) {
@@ -67,7 +67,7 @@ public class Validation {
         this.min = min;
         this.max = max;
     }
-    public Validation(String field, boolean notNull, boolean notEmpty, Integer min, Integer max, Byte minUpperCaseLetters, Byte minLowerCaseLetters, Byte minDigits, Byte minSpecialCharacters) {
+    public Validation(String field, Boolean notNull, Boolean notEmpty, Integer min, Integer max, Byte minUpperCaseLetters, Byte minLowerCaseLetters, Byte minDigits, Byte minSpecialCharacters) {
         this.field = field;
         this.notNull = notNull;
         this.notEmpty = notEmpty;
@@ -78,7 +78,7 @@ public class Validation {
         this.minDigits = minDigits;
         this.minSpecialCharacters = minSpecialCharacters;
     }
-    public Validation(String field, boolean notNull, boolean notEmpty, Integer min, Integer max, String regex, Byte minUpperCaseLetters, Byte minLowerCaseLetters, Byte minDigits, Byte minSpecialCharacters) {
+    public Validation(String field, Boolean notNull, Boolean notEmpty, Integer min, Integer max, String regex, Byte minUpperCaseLetters, Byte minLowerCaseLetters, Byte minDigits, Byte minSpecialCharacters) {
         this.field = field;
         this.notNull = notNull;
         this.notEmpty = notEmpty;

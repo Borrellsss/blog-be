@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Component
@@ -18,7 +19,7 @@ public class UserFiller {
 
     public void fillUsers() {
         userRepository.deleteAll(userRepository.findAll());
-        List<User> users = List.of(
+        Set<User> users = Set.of(
             new User("Edoardo Filippo", "Borrello", (byte) 28, "edoardo.borrello@gmail.com", "e.borrello", bCryptPasswordEncoder.encode("Test123!"), List.of(roleRepository.findById(1L).get(), roleRepository.findById(2L).get(), roleRepository.findById(3L).get(), roleRepository.findById(4L).get())),
             new User("Daniele", "Bertoldi", (byte) 27, "daniele.bertoldi@gmail.com", "d.bertoldi", bCryptPasswordEncoder.encode("Test123!"), List.of(roleRepository.findById(1L).get(), roleRepository.findById(2L).get(), roleRepository.findById(3L).get())),
             new User("Daniele", "Gradassai", (byte) 31, "daniele.gradassai@gmail.com", "d.gradassai", bCryptPasswordEncoder.encode("Test123!"), List.of(roleRepository.findById(1L).get(), roleRepository.findById(2L).get(), roleRepository.findById(3L).get())),

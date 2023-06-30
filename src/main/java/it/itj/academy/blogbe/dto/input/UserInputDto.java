@@ -1,4 +1,4 @@
-package it.itj.academy.blogbe.dto;
+package it.itj.academy.blogbe.dto.input;
 
 import lombok.*;
 

@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ErrorMessageRepository extends JpaRepository<ErrorMessage, Long>, PagingAndSortingRepository<ErrorMessage, Long> {
-    List<ErrorMessage> findByValidationId(Long id);
+    List<ErrorMessage> findByValidationCode(String validationCode);
     Optional<ErrorMessage> findByErrorType(String errorType);
 }

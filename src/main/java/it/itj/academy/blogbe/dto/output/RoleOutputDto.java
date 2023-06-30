@@ -1,4 +1,4 @@
-package it.itj.academy.blogbe.dto;
+package it.itj.academy.blogbe.dto.output;
 
 import lombok.*;
 
@@ -7,6 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class RoleInputDto {
+public class RoleOutputDto {
+    private Long id;
     private String authority;
 }

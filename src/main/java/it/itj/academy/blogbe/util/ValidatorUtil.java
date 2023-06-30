@@ -4,7 +4,6 @@ import it.itj.academy.blogbe.entity.ErrorMessage;
 import it.itj.academy.blogbe.entity.Validation;
 import it.itj.academy.blogbe.repository.ErrorMessageRepository;
 import it.itj.academy.blogbe.repository.ValidationRepository;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -56,15 +55,15 @@ public class ValidatorUtil {
     }
     private void validateField(Object entity, Field field, Validation validation, Map<String, String> errors) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Object value = getGetter(entity, field).invoke(entity);
-        String errorTypePrefix = getClazz(entity).getSimpleName() + "_" + field.getName() + "_";
+        String errorTypePrefix = getClazz(entity).getSimpleName() + "." + field.getName() + ".";
         String message;
-        if (value == null && validation.isNotNull()) {
+        if (value == null && validation.getNotNull()) {
             message = errorMessageRepository.findByErrorType(errorTypePrefix + NOT_NULL)
                 .map(ErrorMessage::getMessage).orElse("Field cannot be null");
             addError(field.getName(), NOT_NULL, message, errors);
         }
         if (value instanceof String s) {
-            if (s.isBlank() && validation.isNotEmpty()) {
+            if (s.isBlank() && validation.getNotEmpty()) {
                 message = errorMessageRepository.findByErrorType(errorTypePrefix + NOT_EMPTY)
                     .map(ErrorMessage::getMessage).orElse("Field cannot be empty");
                 addError(field.getName(), NOT_EMPTY, message, errors);
@@ -116,7 +115,7 @@ public class ValidatorUtil {
                 addError(field.getName(), MAX, message, errors);
             }
         } else if (value instanceof Collection<?> c) {
-            if (validation.isNotEmpty() && c.size() == 0) {
+            if (validation.getNotEmpty() && c.size() == 0) {
                 message = errorMessageRepository.findByErrorType(errorTypePrefix + NOT_EMPTY)
                     .map(ErrorMessage::getMessage).orElse("Field cannot be empty");
                 addError(field.getName(), NOT_EMPTY, message, errors);

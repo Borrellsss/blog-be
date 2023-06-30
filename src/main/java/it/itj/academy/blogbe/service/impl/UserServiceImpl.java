@@ -2,14 +2,20 @@ package it.itj.academy.blogbe.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.itj.academy.blogbe.dto.*;
+import it.itj.academy.blogbe.dto.input.LoginInputDto;
+import it.itj.academy.blogbe.dto.input.RegisterInputDto;
+import it.itj.academy.blogbe.dto.input.UserInputDto;
+import it.itj.academy.blogbe.dto.output.LoginOutputDto;
+import it.itj.academy.blogbe.dto.output.RegisterOutputDto;
+import it.itj.academy.blogbe.dto.output.UserOutputDto;
+import it.itj.academy.blogbe.dto.output.UserPageableOutputDto;
 import it.itj.academy.blogbe.entity.User;
 import it.itj.academy.blogbe.exception.CustomInvalidFieldException;
 import it.itj.academy.blogbe.repository.RoleRepository;
 import it.itj.academy.blogbe.repository.UserRepository;
-import it.itj.academy.blogbe.repository.ValidationRepository;
 import it.itj.academy.blogbe.service.UserService;
 import it.itj.academy.blogbe.util.JWTUtil;
+import it.itj.academy.blogbe.util.OutputDtoResponseUtil;
 import it.itj.academy.blogbe.util.PageableUtil;
 import it.itj.academy.blogbe.util.ValidatorUtil;
 import jakarta.transaction.Transactional;
@@ -26,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,11 +43,11 @@ import java.util.Map;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final ValidationRepository validationRepository;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JWTUtil jwtUtil;
+    private final OutputDtoResponseUtil outputDtoResponseUtil;
     private final ValidatorUtil validatorUtil;
     private final PageableUtil pageableUtil;
 
@@ -49,6 +56,12 @@ public class UserServiceImpl implements UserService {
         Map<String, String> errors = validatorUtil.validate(registerInputDto);
         if (!errors.isEmpty()) {
             throw new CustomInvalidFieldException(errors);
+        }
+        if (userRepository.findByUsername(registerInputDto.getUsername()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Username (%s) already exists", registerInputDto.getUsername()));
+        }
+        if (userRepository.findByEmail(registerInputDto.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email (%s) already exists", registerInputDto.getEmail()));
         }
         User user = modelMapper.map(registerInputDto, User.class);
         if (registerInputDto.getRoles() == null || registerInputDto.getRoles().isEmpty()) {
@@ -72,7 +85,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(loginInputDto.getUsername())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with username %s not found", loginInputDto.getUsername())));
         if (user.isDeleted()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with username %s has been deleted already", loginInputDto.getUsername()));
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with username %s has been deleted", loginInputDto.getUsername()));
         }
         if (user.isBlocked()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, String.format("This account has been suspended, please contact customer support"));
@@ -92,22 +105,26 @@ public class UserServiceImpl implements UserService {
         return pageableUtil.userPageableOutputDto(users);
     }
     @Override
-    public UserOutputDto readById(Long id) {
+    public UserOutputDto readById(Long id) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d not found", id)));
         if (user.isDeleted()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d has been deleted already", id));
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d has been deleted", id));
         }
-        return modelMapper.map(user, UserOutputDto.class);
+        UserOutputDto userOutputDto = modelMapper.map(user, UserOutputDto.class);
+        outputDtoResponseUtil.filter(userOutputDto);
+        return userOutputDto;
     }
     @Override
-    public UserOutputDto readByUsername(String username) {
+    public UserOutputDto readByUsername(String username) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with username %s not found", username)));
         if (user.isDeleted()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with username %s has been deleted", username));
         }
-        return modelMapper.map(user, UserOutputDto.class);
+        UserOutputDto userOutputDto = modelMapper.map(user, UserOutputDto.class);
+        outputDtoResponseUtil.filter(userOutputDto);
+        return userOutputDto;
     }
     @Override
     public UserOutputDto update(Long id, UserInputDto userInputDto) {
@@ -119,11 +136,11 @@ public class UserServiceImpl implements UserService {
         if (userInputDto.getRoles() == null || userInputDto.getRoles().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Roles is required");
         } else {
-            user.setRoles(userInputDto.getRoles()
-                .stream()
-                .map(roleId -> roleRepository.findById(roleId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Role with id %d not found", roleId))))
-                .toList());
+            user.getRoles().clear();
+            for (Long roleId : userInputDto.getRoles()) {
+                user.getRoles().add(roleRepository.findById(roleId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Role with id %d not found", roleId))));
+            }
         }
         user.setFirstName(userInputDto.getFirstName());
         user.setLastName(userInputDto.getLastName());

@@ -1,11 +1,7 @@
 package it.itj.academy.blogbe.util;
 
-import it.itj.academy.blogbe.dto.ErrorMessageOutputDto;
-import it.itj.academy.blogbe.dto.ErrorMessagePageableOutputDto;
-import it.itj.academy.blogbe.dto.UserOutputDto;
-import it.itj.academy.blogbe.dto.UserPageableOutputDto;
-import it.itj.academy.blogbe.dto.ValidationOutputDto;
-import it.itj.academy.blogbe.dto.ValidationPageableOutputDto;
+import it.itj.academy.blogbe.dto.output.*;
+import it.itj.academy.blogbe.entity.Category;
 import it.itj.academy.blogbe.entity.ErrorMessage;
 import it.itj.academy.blogbe.entity.User;
 import it.itj.academy.blogbe.entity.Validation;
@@ -51,13 +47,30 @@ public class PageableUtil {
         if (errorMessages.hasContent()) {
             ErrorMessagePageableOutputDto errorMessagePageableOutputDto = new ErrorMessagePageableOutputDto();
             errorMessagePageableOutputDto.setErrorMessages(errorMessages.stream()
-                .map(validation -> modelMapper.map(errorMessages, ErrorMessageOutputDto.class))
+                .map(errorMessage -> {
+                    ErrorMessageOutputDto errorMessageOutputDto = modelMapper.map(errorMessage, ErrorMessageOutputDto.class);
+                    errorMessageOutputDto.setValidationCode(errorMessage.getValidation().getCode());
+                    return errorMessageOutputDto;
+                })
                 .toList());
             errorMessagePageableOutputDto.setTotalPages(errorMessages.getTotalPages());
             errorMessagePageableOutputDto.setTotalElements(errorMessages.getTotalElements());
             return errorMessagePageableOutputDto;
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Error messages not found");
+        }
+    }
+    public CategoryPageableOutputDto categoryPageableOutputDto(Page<Category> categories) {
+        if (categories.hasContent()) {
+            CategoryPageableOutputDto categoryPageableOutputDto = new CategoryPageableOutputDto();
+            categoryPageableOutputDto.setCategories(categories.stream()
+                .map(category -> modelMapper.map(category, CategoryOutputDto.class))
+                .toList());
+            categoryPageableOutputDto.setTotalPages(categories.getTotalPages());
+            categoryPageableOutputDto.setTotalElements(categories.getTotalElements());
+            return categoryPageableOutputDto;
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Categories not found");
         }
     }
 }

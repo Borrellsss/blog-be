@@ -1,15 +1,14 @@
 package it.itj.academy.blogbe.service.impl;
 
-import it.itj.academy.blogbe.dto.ErrorMessageInputDto;
-import it.itj.academy.blogbe.dto.ErrorMessageOutputDto;
-import it.itj.academy.blogbe.dto.ErrorMessagePageableOutputDto;
+import it.itj.academy.blogbe.dto.input.ErrorMessageInputDto;
+import it.itj.academy.blogbe.dto.output.ErrorMessageOutputDto;
+import it.itj.academy.blogbe.dto.output.ErrorMessagePageableOutputDto;
 import it.itj.academy.blogbe.entity.ErrorMessage;
 import it.itj.academy.blogbe.entity.Validation;
 import it.itj.academy.blogbe.repository.ErrorMessageRepository;
 import it.itj.academy.blogbe.repository.ValidationRepository;
 import it.itj.academy.blogbe.service.ErrorMessageService;
 import it.itj.academy.blogbe.util.PageableUtil;
-import it.itj.academy.blogbe.util.ValidatorUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +20,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
@@ -29,41 +33,42 @@ public class ErrorMessageServiceImpl implements ErrorMessageService {
     private final ErrorMessageRepository errorMessageRepository;
     private final ValidationRepository validationRepository;
     private final ModelMapper modelMapper;
-    private final ValidatorUtil validatorUtil;
     private final PageableUtil pageableUtil;
 
     private boolean isErrorTypeValid(String errorType) {
-        String[] fieldClass = errorType.split("_");
-        if (fieldClass.length != 3) {
+        String[] errorTypeFormat = errorType.split("\\.");
+        if (errorTypeFormat.length != 3) {
             return false;
         }
         try {
-            Class<?> clazz = Class.forName(String.format("it.itj.academy.blogbe.dto.%s", fieldClass[0]));
-            clazz.getDeclaredField(fieldClass[1]);
+            Class<?> clazz = Class.forName(String.format("it.itj.academy.blogbe.dto.input.%s", errorTypeFormat[0]));
+            clazz.getDeclaredField(errorTypeFormat[1]);
         } catch (ClassNotFoundException | NoSuchFieldException e) {
             return false;
         }
-        return isValidationConstraintPresent(errorType);
+        return isValidationConstraintPresent(errorTypeFormat);
     }
-    private boolean isValidationConstraintPresent(String errorType) {
-        String[] errorTypeParts = errorType.split("_");
-        Validation validation = validationRepository.findByField(errorTypeParts[0] + "_" + errorTypeParts[1])
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Validation with field %s not found", errorTypeParts[0] + "_" + errorTypeParts[1])));
-        return validation.isNotNull() && errorTypeParts[2].equals(validatorUtil.NOT_NULL) ||
-            validation.isNotEmpty() && errorTypeParts[2].equals(validatorUtil.NOT_EMPTY) ||
-            validation.getMin() != null && errorTypeParts[2].equals(validatorUtil.MIN) ||
-            validation.getMax() != null && errorTypeParts[2].equals(validatorUtil.MAX) ||
-            validation.getRegex() != null && errorTypeParts[2].equals(validatorUtil.REGEX) ||
-            validation.getMinUpperCaseLetters() != null && errorTypeParts[2].equals(validatorUtil.MIN_UPPERCASE_LETTERS) ||
-            validation.getMinLowerCaseLetters() != null && errorTypeParts[2].equals(validatorUtil.MIN_LOWERCASE_LETTERS) ||
-            validation.getMinDigits() != null && errorTypeParts[2].equals(validatorUtil.MIN_DIGITS) ||
-            validation.getMinSpecialCharacters() != null && errorTypeParts[2].equals(validatorUtil.MIN_SPECIAL_CHARACTERS);
+    private boolean isValidationConstraintPresent(String[] errorTypeFormat) {
+        Validation validation = validationRepository.findByField(errorTypeFormat[0] + "." + errorTypeFormat[1])
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Validation with field %s not found", errorTypeFormat[0] + "." + errorTypeFormat[1])));
+        try {
+            Class<? extends Validation> clazz = validation.getClass();
+            Field field = clazz.getDeclaredField(errorTypeFormat[2]);
+            String getter = "get" + Character.toUpperCase(field.getName().charAt(0)) + field.getName().substring(1);
+            Method method = clazz.getDeclaredMethod(getter);
+            if (method.invoke(validation) != null && !method.invoke(validation).equals(false)) {
+                return true;
+            }
+        } catch (NoSuchFieldException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            return false;
+        }
+        return false;
     }
     @Override
     public ErrorMessageOutputDto create(ErrorMessageInputDto errorMessageInputDto) {
         if (!isErrorTypeValid(errorMessageInputDto.getErrorType())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                String.format("Error type %s is not valid: the type must be in the format \"Class_fieldName_CONSTRAINT-TYPE\" and the field must have the corresponding constraint",
+                String.format("Error type %s is not valid: the type must be in the format \"Class.fieldName.constraintType\" and the field must have the corresponding constraint",
                     errorMessageInputDto.getErrorType()));
         }
         ErrorMessage errorMessage = modelMapper.map(errorMessageInputDto, ErrorMessage.class);
@@ -76,29 +81,41 @@ public class ErrorMessageServiceImpl implements ErrorMessageService {
     @Override
     public ErrorMessagePageableOutputDto readAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ErrorMessage> errorsMessages = errorMessageRepository.findAll(pageable);
-        return pageableUtil.errorMessagePageableOutputDto(errorsMessages);
+        Page<ErrorMessage> errorMessages = errorMessageRepository.findAll(pageable);
+        return pageableUtil.errorMessagePageableOutputDto(errorMessages);
     }
     @Override
     public ErrorMessageOutputDto readById(Long id) {
         ErrorMessage errorMessage = errorMessageRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Error message with id %d not found", id)));
-        return modelMapper.map(errorMessage, ErrorMessageOutputDto.class);
+        ErrorMessageOutputDto errorMessageOutputDto = modelMapper.map(errorMessage, ErrorMessageOutputDto.class);
+        errorMessageOutputDto.setValidationCode(errorMessage.getValidation().getCode());
+        return errorMessageOutputDto;
+    }
+    @Override
+    public List<ErrorMessageOutputDto> readByValidationCode(String validationCode) {
+        List<ErrorMessage> errorMessages = errorMessageRepository.findByValidationCode(validationCode);
+        return errorMessages.stream()
+            .map(errorMessage -> {
+                ErrorMessageOutputDto errorMessageOutputDto = modelMapper.map(errorMessage, ErrorMessageOutputDto.class);
+                errorMessageOutputDto.setValidationCode(errorMessage.getValidation().getCode());
+                return errorMessageOutputDto;
+            })
+            .toList();
+    }
+    @Override
+    public ErrorMessageOutputDto readByErrorType(String errorType) {
+        ErrorMessage errorMessage = errorMessageRepository.findByErrorType(errorType)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Error message with type %s not found", errorType)));
+        ErrorMessageOutputDto errorMessageOutputDto = modelMapper.map(errorMessage, ErrorMessageOutputDto.class);
+        errorMessageOutputDto.setValidationCode(errorMessage.getValidation().getCode());
+        return errorMessageOutputDto;
     }
     @Override
     public ErrorMessageOutputDto update(Long id, ErrorMessageInputDto errorMessageInputDto) {
         ErrorMessage errorMessage = errorMessageRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Error message with id %d not found", id)));
-        if (!errorMessage.getErrorType().equals(errorMessageInputDto.getErrorType())) {
-            if (errorMessageRepository.findByErrorType(errorMessageInputDto.getErrorType()).isPresent()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Error message with type %s already exists", errorMessageInputDto.getErrorType()));
-            } else {
-                errorMessage.setErrorType(errorMessageInputDto.getErrorType());
-            }
-        }
         errorMessage.setMessage(errorMessageInputDto.getMessage());
-        errorMessage.setValidation(validationRepository.findByCode(errorMessageInputDto.getValidationCode())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Validation with code %s not found", errorMessageInputDto.getValidationCode()))));
         ErrorMessageOutputDto errorMessageOutputDto = modelMapper.map(errorMessageRepository.save(errorMessage), ErrorMessageOutputDto.class);
         errorMessageOutputDto.setValidationCode(errorMessage.getValidation().getCode());
         return errorMessageOutputDto;

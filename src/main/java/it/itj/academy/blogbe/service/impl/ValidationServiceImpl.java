@@ -1,9 +1,9 @@
 package it.itj.academy.blogbe.service.impl;
 
-import it.itj.academy.blogbe.dto.ErrorMessageOutputDto;
-import it.itj.academy.blogbe.dto.ValidationInputDto;
-import it.itj.academy.blogbe.dto.ValidationOutputDto;
-import it.itj.academy.blogbe.dto.ValidationPageableOutputDto;
+import it.itj.academy.blogbe.dto.output.ErrorMessageOutputDto;
+import it.itj.academy.blogbe.dto.input.ValidationInputDto;
+import it.itj.academy.blogbe.dto.output.ValidationOutputDto;
+import it.itj.academy.blogbe.dto.output.ValidationPageableOutputDto;
 import it.itj.academy.blogbe.entity.Validation;
 import it.itj.academy.blogbe.exception.CustomInvalidValidationFiledConstraintException;
 import it.itj.academy.blogbe.repository.ValidationRepository;
@@ -20,7 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -34,13 +36,22 @@ public class ValidationServiceImpl implements ValidationService {
     private final ModelMapper modelMapper;
     private final PageableUtil pageableUtil;
 
+    private void addToErrors(String field, String message, Map<String, List<String>> errors) {
+        if (errors.containsKey(field)) {
+            errors.get(field).add(message);
+        } else {
+            List<String> messages = new ArrayList<>();
+            messages.add(message);
+            errors.put(field, messages);
+        }
+    }
     private boolean isFieldValid(String field) {
-        String[] fieldClass = field.split("_");
+        String[] fieldClass = field.split("\\.");
         if (fieldClass.length != 2) {
             return false;
         }
         try {
-            Class<?> clazz = Class.forName(String.format("it.itj.academy.blogbe.dto.%s", fieldClass[0]));
+            Class<?> clazz = Class.forName(String.format("it.itj.academy.blogbe.dto.input.%s", fieldClass[0]));
             clazz.getDeclaredField(fieldClass[1]);
         } catch (ClassNotFoundException | NoSuchFieldException e) {
             return false;
@@ -50,40 +61,40 @@ public class ValidationServiceImpl implements ValidationService {
     @Override
     public ValidationOutputDto create(ValidationInputDto validationInputDto) {
         if (!isFieldValid(validationInputDto.getField())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Validation field is not valid: the field must be in the format \"Class_fieldName\"");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Validation field is not valid: the field must be in the format 'Class.fieldName'");
         }
-        Map<String, String> errors = new HashMap<>();
+        Map<String, List<String>> errors = new HashMap<>();
         if (validationInputDto.getCode() == null) {
-            errors.put("code", "Validation code cannot be null");
+            addToErrors("code", "Validation code cannot be null", errors);
         } else {
             if (validationInputDto.getCode().length() > 8) {
-                errors.put("code", "Validation code cannot be greater than 8 characters");
+                addToErrors("code", String.format("Validation code (%s) cannot be greater than 8 characters", validationInputDto.getCode()), errors);
             }
             if (validationRepository.findByCode(validationInputDto.getCode()).isPresent()) {
-                errors.put("code", "Validation code already exists");
+                addToErrors("code", String.format("Validation code (%s) already exists", validationInputDto.getCode()), errors);
             }
         }
         if (validationInputDto.getField() == null) {
-            errors.put("field", "Validation field cannot be null");
+            addToErrors("field", "Validation field cannot be null", errors);
         } else if (validationRepository.findByField(validationInputDto.getField()).isPresent()) {
-            errors.put("field", "Validation field already exists");
+            addToErrors("field", String.format("Validation field (%s) already exists", validationInputDto.getField()), errors);
         }
         if (validationInputDto.getMin() != null && validationInputDto.getMax() != null) {
             if (validationInputDto.getMin() <= 0) {
-                errors.put("minLength", "Validation min length cannot be less than 1");
+                addToErrors("minLength", "Validation min length cannot be less than 1", errors);
             }
             if (validationInputDto.getMax() <= 0) {
-                errors.put("maxLength", "Validation max length cannot be less than 1");
+                addToErrors("maxLength", "Validation max length cannot be less than 1", errors);
             }
             if (validationInputDto.getMin() > validationInputDto.getMax()) {
-                errors.put("minLength", "Validation min length cannot be greater than max length");
+                addToErrors("minLength", "Validation min length cannot be greater than max length", errors);
             }
         }
         if (validationInputDto.getRegex() != null) {
             try {
                 Pattern.compile(validationInputDto.getRegex());
             } catch (PatternSyntaxException exception) {
-                errors.put("regex", "Validation regex is not valid");
+                addToErrors("regex", String.format("Validation regex (%s) is not valid", validationInputDto.getRegex()), errors);
             }
         }
         if (!errors.isEmpty()) {
@@ -107,14 +118,10 @@ public class ValidationServiceImpl implements ValidationService {
     public ValidationOutputDto readByCode(String code) {
         Validation validation = validationRepository.findByCode(code)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Validation with code %s not found", code)));
-        ValidationOutputDto validationOutputDto = modelMapper.map(validation, ValidationOutputDto.class);
-//        validationOutputDto.setErrorMessages(validation.getErrorMessages().stream()
-//            .map(errorMessage -> modelMapper.map(errorMessage, ErrorMessageOutputDto.class))
-//            .toList());
-        return validationOutputDto;
+        return modelMapper.map(validation, ValidationOutputDto.class);
     }
     @Override
-    public ValidationOutputDto readByFiled(String field) {
+    public ValidationOutputDto readByField(String field) {
         Validation validation = validationRepository.findByField(field)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Validation with field %s not found", field)));
         ValidationOutputDto validationOutputDto = modelMapper.map(validation, ValidationOutputDto.class);
@@ -127,39 +134,41 @@ public class ValidationServiceImpl implements ValidationService {
     public ValidationOutputDto update(String code, ValidationInputDto validationInputDto) {
         Validation validation = validationRepository.findByCode(code)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Validation with code %s not found", code)));
-        if (isFieldValid(validationInputDto.getField())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Validation field is not valid: the field must be in the format \"ClassName_fieldName\"");
+        if (!isFieldValid(validationInputDto.getField())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Validation field is not valid: the field must be in the format \"ClassName.fieldName\"");
         }
-        Map<String, String> errors = new HashMap<>();
+        Map<String, List<String>> errors = new HashMap<>();
         if (validationInputDto.getCode() == null) {
-            errors.put("code", "Validation code cannot be null");
+            addToErrors("code", "Validation code cannot be null", errors);
         } else {
-            if (validationInputDto.getCode().length() > 10) {
-                errors.put("code", "Validation code cannot be greater than 10 characters");
+            if (validationInputDto.getCode().length() > 8) {
+                addToErrors("code", String.format("Validation code (%s) cannot be greater than 8 characters", validationInputDto.getCode()), errors);
             }
             if (!validationInputDto.getCode().equals(validation.getCode()) && validationRepository.findByCode(validationInputDto.getCode()).isPresent()) {
-                errors.put("code", "Validation code already exists");
+                addToErrors("code", String.format("Validation code (%s) already exists", validationInputDto.getCode()), errors);
             }
         }
         if (validationInputDto.getField() == null) {
-            errors.put("field", "Validation field cannot be null");
+            addToErrors("field", "Validation field cannot be null", errors);
         } else if (!validationInputDto.getField().equals(validation.getField()) && validationRepository.findByField(validationInputDto.getField()).isPresent()) {
-            errors.put("field", "Validation field already exists");
+            addToErrors("field", String.format("Validation field (%s) already exists", validationInputDto.getField()), errors);
         }
-        if (validationInputDto.getMin() <= 0) {
-            errors.put("minLength", "Validation min length cannot be less than 1");
-        }
-        if (validationInputDto.getMax() <= 0) {
-            errors.put("maxLength", "Validation max length cannot be less than 1");
-        }
-        if (validationInputDto.getMin() > validationInputDto.getMax()) {
-            errors.put("minLength", "Validation min length cannot be greater than max length");
+        if (validationInputDto.getMin() != null && validationInputDto.getMax() != null) {
+            if (validationInputDto.getMin() <= 0) {
+                addToErrors("minLength", "Validation min length cannot be less than 1", errors);
+            }
+            if (validationInputDto.getMax() <= 0) {
+                addToErrors("maxLength", "Validation max length cannot be less than 1", errors);
+            }
+            if (validationInputDto.getMin() > validationInputDto.getMax()) {
+                addToErrors("minLength", "Validation min length cannot be greater than max length", errors);
+            }
         }
         if (validationInputDto.getRegex() != null) {
             try {
                 Pattern.compile(validationInputDto.getRegex());
             } catch (PatternSyntaxException exception) {
-                errors.put("regex", "Validation regex is not valid");
+                addToErrors("regex", String.format("Validation regex (%s) is not valid", validationInputDto.getRegex()), errors);
             }
         }
         if (!errors.isEmpty()) {
@@ -176,11 +185,7 @@ public class ValidationServiceImpl implements ValidationService {
         validation.setMinLowerCaseLetters(validationInputDto.getMinLowerCaseLetters());
         validation.setMinDigits(validationInputDto.getMinDigits());
         validation.setMinSpecialCharacters(validationInputDto.getMinSpecialCharacters());
-        ValidationOutputDto validationOutputDto = modelMapper.map(validationRepository.save(validation), ValidationOutputDto.class);
-        validationOutputDto.setErrorMessages(validation.getErrorMessages().stream()
-            .map(errorMessage -> modelMapper.map(errorMessage, ErrorMessageOutputDto.class))
-            .toList());
-        return validationOutputDto;
+        return modelMapper.map(validationRepository.findByCode(validationRepository.save(validation).getCode()), ValidationOutputDto.class);
     }
     @Override
     public void delete(String code) {

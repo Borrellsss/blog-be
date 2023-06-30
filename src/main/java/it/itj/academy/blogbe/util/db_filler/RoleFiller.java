@@ -5,8 +5,7 @@ import it.itj.academy.blogbe.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Component
@@ -14,7 +13,7 @@ public class RoleFiller {
     private final RoleRepository roleRepository;
     public void fillRoles() {
         roleRepository.deleteAll(roleRepository.findAll());
-        List<Role> roles = List.of(
+        Set<Role> roles = Set.of(
             new Role("ROLE_USER"),
             new Role("ROLE_MODERATOR"),
             new Role("ROLE_ADMIN"),

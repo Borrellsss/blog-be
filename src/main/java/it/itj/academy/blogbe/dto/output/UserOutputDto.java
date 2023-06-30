@@ -1,7 +1,9 @@
-package it.itj.academy.blogbe.dto;
+package it.itj.academy.blogbe.dto.output;
 
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -17,5 +19,11 @@ public class UserOutputDto {
     private String email;
     private String username;
     private String avatar;
+    private boolean blocked = false;
+    private boolean deleted = false;
+    private Long createdBy;
+    private Long updatedBy;
+    private LocalDate createdAt;
+    private LocalDateTime updatedAt;
     private List<RoleOutputDto> roles;
 }
