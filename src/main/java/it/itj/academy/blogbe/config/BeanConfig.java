@@ -1,7 +1,7 @@
 package it.itj.academy.blogbe.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.itj.academy.blogbe.dto.output.UserOutputDto;
+import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
 import it.itj.academy.blogbe.repository.UserRepository;
 import it.itj.academy.blogbe.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;

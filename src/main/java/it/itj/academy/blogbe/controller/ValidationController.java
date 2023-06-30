@@ -1,8 +1,8 @@
 package it.itj.academy.blogbe.controller;
 
 import it.itj.academy.blogbe.dto.input.ValidationInputDto;
-import it.itj.academy.blogbe.dto.output.ValidationOutputDto;
-import it.itj.academy.blogbe.dto.output.ValidationPageableOutputDto;
+import it.itj.academy.blogbe.dto.output.validation.ValidationOutputDto;
+import it.itj.academy.blogbe.dto.output.validation.ValidationPageableOutputDto;
 import it.itj.academy.blogbe.service.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

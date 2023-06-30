@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.itj.academy.blogbe.dto.input.LoginInputDto;
 import it.itj.academy.blogbe.dto.input.RegisterInputDto;
 import it.itj.academy.blogbe.dto.input.UserInputDto;
-import it.itj.academy.blogbe.dto.output.LoginOutputDto;
-import it.itj.academy.blogbe.dto.output.RegisterOutputDto;
-import it.itj.academy.blogbe.dto.output.UserOutputDto;
-import it.itj.academy.blogbe.dto.output.UserPageableOutputDto;
+import it.itj.academy.blogbe.dto.output.user.LoginOutputDto;
+import it.itj.academy.blogbe.dto.output.user.RegisterOutputDto;
+import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
+import it.itj.academy.blogbe.dto.output.user.UserPageableOutputDto;
 import it.itj.academy.blogbe.entity.User;
 import it.itj.academy.blogbe.exception.CustomInvalidFieldException;
 import it.itj.academy.blogbe.repository.RoleRepository;
@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

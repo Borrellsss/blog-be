@@ -1,8 +1,8 @@
 package it.itj.academy.blogbe.controller;
 
 import it.itj.academy.blogbe.dto.input.TagInputDto;
-import it.itj.academy.blogbe.dto.output.TagOutputDto;
-import it.itj.academy.blogbe.dto.output.TagPageableOutputDto;
+import it.itj.academy.blogbe.dto.output.tag.TagOutputDto;
+import it.itj.academy.blogbe.dto.output.tag.TagPageableOutputDto;
 import it.itj.academy.blogbe.service.TagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

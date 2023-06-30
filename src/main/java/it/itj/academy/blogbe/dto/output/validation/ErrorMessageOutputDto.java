@@ -1,5 +1,6 @@
-package it.itj.academy.blogbe.dto.output;
+package it.itj.academy.blogbe.dto.output.validation;
 
+import it.itj.academy.blogbe.dto.output.error_message.ValidationOutputDto;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -11,12 +12,13 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class TagOutputDto {
+public class ErrorMessageOutputDto {
     private Long id;
-    private String name;
+    private String errorType;
+    private String message;
+    private String validationCode;
     private Long createdBy;
     private Long updatedBy;
     private LocalDate createdAt;
     private LocalDateTime updatedAt;
-    private List<CategoryOutputDto> categories;
 }

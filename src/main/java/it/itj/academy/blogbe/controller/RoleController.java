@@ -1,7 +1,7 @@
 package it.itj.academy.blogbe.controller;
 
 import it.itj.academy.blogbe.dto.input.RoleInputDto;
-import it.itj.academy.blogbe.dto.output.RoleOutputDto;
+import it.itj.academy.blogbe.dto.output.role.RoleOutputDto;
 import it.itj.academy.blogbe.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

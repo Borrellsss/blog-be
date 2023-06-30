@@ -1,4 +1,4 @@
-package it.itj.academy.blogbe.dto.output;
+package it.itj.academy.blogbe.dto.output.post;
 
 import lombok.*;
 
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class CategoryOutputDto {
+public class TagOutputDto {
     private Long id;
     private String name;
     private Long createdBy;

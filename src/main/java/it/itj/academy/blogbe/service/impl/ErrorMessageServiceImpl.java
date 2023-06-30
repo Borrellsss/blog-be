@@ -1,8 +1,8 @@
 package it.itj.academy.blogbe.service.impl;
 
 import it.itj.academy.blogbe.dto.input.ErrorMessageInputDto;
-import it.itj.academy.blogbe.dto.output.ErrorMessageOutputDto;
-import it.itj.academy.blogbe.dto.output.ErrorMessagePageableOutputDto;
+import it.itj.academy.blogbe.dto.output.error_message.ErrorMessageOutputDto;
+import it.itj.academy.blogbe.dto.output.error_message.ErrorMessagePageableOutputDto;
 import it.itj.academy.blogbe.entity.ErrorMessage;
 import it.itj.academy.blogbe.entity.Validation;
 import it.itj.academy.blogbe.repository.ErrorMessageRepository;

@@ -1,4 +1,4 @@
-package it.itj.academy.blogbe.dto.output;
+package it.itj.academy.blogbe.dto.output.error_message;
 
 import lombok.*;
 
@@ -9,8 +9,8 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class UserPageableOutputDto {
-    private List<UserOutputDto> users;
+public class ErrorMessagePageableOutputDto {
+    private List<ErrorMessageOutputDto> errorMessages;
     private int totalPages;
     private long totalElements;
 }

@@ -1,7 +1,5 @@
 package it.itj.academy.blogbe.util;
 
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -29,6 +27,9 @@ public class OutputDtoResponseUtil {
         for (Field field : clazz.getDeclaredFields()) {
             if (securityContextHolderAuthoritiesFilter().isEmpty() && (field.getName().equals("createdBy") || field.getName().equals("updatedBy"))) {
                 hideField(object, field);
+            }
+            if (getGetter(object, field).invoke(object) instanceof Collection collection) {
+                filterCollection(collection);
             }
         }
     }

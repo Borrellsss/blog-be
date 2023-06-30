@@ -1,8 +1,8 @@
 package it.itj.academy.blogbe.controller;
 
 import it.itj.academy.blogbe.dto.input.ErrorMessageInputDto;
-import it.itj.academy.blogbe.dto.output.ErrorMessageOutputDto;
-import it.itj.academy.blogbe.dto.output.ErrorMessagePageableOutputDto;
+import it.itj.academy.blogbe.dto.output.error_message.ErrorMessageOutputDto;
+import it.itj.academy.blogbe.dto.output.error_message.ErrorMessagePageableOutputDto;
 import it.itj.academy.blogbe.service.ErrorMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

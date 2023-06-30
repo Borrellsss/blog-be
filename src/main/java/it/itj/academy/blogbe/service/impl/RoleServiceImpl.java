@@ -1,7 +1,7 @@
 package it.itj.academy.blogbe.service.impl;
 
 import it.itj.academy.blogbe.dto.input.RoleInputDto;
-import it.itj.academy.blogbe.dto.output.RoleOutputDto;
+import it.itj.academy.blogbe.dto.output.role.RoleOutputDto;
 import it.itj.academy.blogbe.entity.Role;
 import it.itj.academy.blogbe.repository.RoleRepository;
 import it.itj.academy.blogbe.service.RoleService;

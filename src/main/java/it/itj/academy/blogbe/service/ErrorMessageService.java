@@ -1,8 +1,8 @@
 package it.itj.academy.blogbe.service;
 
 import it.itj.academy.blogbe.dto.input.ErrorMessageInputDto;
-import it.itj.academy.blogbe.dto.output.ErrorMessageOutputDto;
-import it.itj.academy.blogbe.dto.output.ErrorMessagePageableOutputDto;
+import it.itj.academy.blogbe.dto.output.error_message.ErrorMessageOutputDto;
+import it.itj.academy.blogbe.dto.output.error_message.ErrorMessagePageableOutputDto;
 
 import java.util.List;
 

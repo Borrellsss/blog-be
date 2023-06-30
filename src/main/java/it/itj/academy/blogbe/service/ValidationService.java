@@ -1,8 +1,8 @@
 package it.itj.academy.blogbe.service;
 
 import it.itj.academy.blogbe.dto.input.ValidationInputDto;
-import it.itj.academy.blogbe.dto.output.ValidationOutputDto;
-import it.itj.academy.blogbe.dto.output.ValidationPageableOutputDto;
+import it.itj.academy.blogbe.dto.output.validation.ValidationOutputDto;
+import it.itj.academy.blogbe.dto.output.validation.ValidationPageableOutputDto;
 
 public interface ValidationService {
     ValidationOutputDto create(ValidationInputDto validationInputDto);

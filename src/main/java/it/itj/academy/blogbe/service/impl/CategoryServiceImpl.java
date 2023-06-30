@@ -1,8 +1,8 @@
 package it.itj.academy.blogbe.service.impl;
 
 import it.itj.academy.blogbe.dto.input.CategoryInputDto;
-import it.itj.academy.blogbe.dto.output.CategoryOutputDto;
-import it.itj.academy.blogbe.dto.output.CategoryPageableOutputDto;
+import it.itj.academy.blogbe.dto.output.category.CategoryOutputDto;
+import it.itj.academy.blogbe.dto.output.category.CategoryPageableOutputDto;
 import it.itj.academy.blogbe.entity.Category;
 import it.itj.academy.blogbe.exception.CustomInvalidFieldException;
 import it.itj.academy.blogbe.repository.CategoryRepository;

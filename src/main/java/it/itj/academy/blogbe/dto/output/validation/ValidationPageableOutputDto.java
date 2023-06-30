@@ -1,4 +1,4 @@
-package it.itj.academy.blogbe.dto.output;
+package it.itj.academy.blogbe.dto.output.validation;
 
 import lombok.*;
 
@@ -9,8 +9,8 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class CategoryPageableOutputDto {
-    private List<CategoryOutputDto> categories;
+public class ValidationPageableOutputDto {
+    private List<ValidationOutputDto> validations;
     private int totalPages;
     private long totalElements;
 }

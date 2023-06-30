@@ -1,5 +1,6 @@
-package it.itj.academy.blogbe.dto.output;
+package it.itj.academy.blogbe.dto.output.user;
 
+import it.itj.academy.blogbe.dto.output.role.RoleOutputDto;
 import lombok.*;
 
 import java.time.LocalDate;

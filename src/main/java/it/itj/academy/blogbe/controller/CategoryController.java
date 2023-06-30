@@ -1,8 +1,8 @@
 package it.itj.academy.blogbe.controller;
 
 import it.itj.academy.blogbe.dto.input.CategoryInputDto;
-import it.itj.academy.blogbe.dto.output.CategoryOutputDto;
-import it.itj.academy.blogbe.dto.output.CategoryPageableOutputDto;
+import it.itj.academy.blogbe.dto.output.category.CategoryOutputDto;
+import it.itj.academy.blogbe.dto.output.category.CategoryPageableOutputDto;
 import it.itj.academy.blogbe.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,15 @@
 package it.itj.academy.blogbe.util;
 
-import it.itj.academy.blogbe.dto.output.*;
+import it.itj.academy.blogbe.dto.output.category.CategoryOutputDto;
+import it.itj.academy.blogbe.dto.output.category.CategoryPageableOutputDto;
+import it.itj.academy.blogbe.dto.output.error_message.ErrorMessageOutputDto;
+import it.itj.academy.blogbe.dto.output.error_message.ErrorMessagePageableOutputDto;
+import it.itj.academy.blogbe.dto.output.tag.TagOutputDto;
+import it.itj.academy.blogbe.dto.output.tag.TagPageableOutputDto;
+import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
+import it.itj.academy.blogbe.dto.output.user.UserPageableOutputDto;
+import it.itj.academy.blogbe.dto.output.validation.ValidationOutputDto;
+import it.itj.academy.blogbe.dto.output.validation.ValidationPageableOutputDto;
 import it.itj.academy.blogbe.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
