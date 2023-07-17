@@ -1,6 +1,5 @@
 package it.itj.academy.blogbe.dto.output.tag;
 
-import it.itj.academy.blogbe.dto.output.tag.TagOutputDto;
 import lombok.*;
 
 import java.util.List;

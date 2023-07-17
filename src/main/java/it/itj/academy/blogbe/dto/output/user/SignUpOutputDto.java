@@ -10,8 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class RegisterOutputDto {
+public class SignUpOutputDto {
     private Long id;
     private String username;
-    private List<RoleOutputDto> roles;
+    private RoleOutputDto role;
 }

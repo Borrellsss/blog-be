@@ -49,6 +49,10 @@ public class ErrorMessageController {
     public ResponseEntity<ErrorMessageOutputDto> update(@PathVariable Long id, @RequestBody ErrorMessageInputDto errorMessageInputDto) {
         return new ResponseEntity<>(errorMessageService.update(id, errorMessageInputDto), HttpStatus.OK);
     }
+    @PutMapping(value = "/error")
+    public ResponseEntity<ErrorMessageOutputDto> update(@RequestParam String errorType, @RequestParam String validationCode, @RequestBody ErrorMessageInputDto errorMessageInputDto) {
+        return new ResponseEntity<>(errorMessageService.update(errorType, validationCode, errorMessageInputDto), HttpStatus.OK);
+    }
     // DELETE
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

@@ -16,15 +16,15 @@ public class UserOutputDto {
     private Long id;
     private String firstName;
     private String lastName;
-    private Byte age;
+    private LocalDate birthDate;
     private String email;
     private String username;
     private String avatar;
-    private boolean blocked = false;
-    private boolean deleted = false;
+    private Boolean blocked = false;
+    private Boolean deleted = false;
     private Long createdBy;
     private Long updatedBy;
     private LocalDate createdAt;
     private LocalDateTime updatedAt;
-    private List<RoleOutputDto> roles;
+    private RoleOutputDto role;
 }

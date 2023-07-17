@@ -1,11 +1,11 @@
 package it.itj.academy.blogbe.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import it.itj.academy.blogbe.dto.input.LoginInputDto;
-import it.itj.academy.blogbe.dto.input.RegisterInputDto;
+import it.itj.academy.blogbe.dto.input.SignInInputDto;
+import it.itj.academy.blogbe.dto.input.SignUpInputDto;
 import it.itj.academy.blogbe.dto.input.UserInputDto;
-import it.itj.academy.blogbe.dto.output.user.LoginOutputDto;
-import it.itj.academy.blogbe.dto.output.user.RegisterOutputDto;
+import it.itj.academy.blogbe.dto.output.user.SignInOutputDto;
+import it.itj.academy.blogbe.dto.output.user.SignUpOutputDto;
 import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
 import it.itj.academy.blogbe.dto.output.user.UserPageableOutputDto;
 import it.itj.academy.blogbe.service.UserService;
@@ -28,13 +28,13 @@ public class UserController {
     private final int PAGE_SIZE = 20;
 
     // INSERT
-    @PostMapping(value = "/register")
-    public ResponseEntity<RegisterOutputDto> register(@RequestBody RegisterInputDto registerInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        return new ResponseEntity<>(userService.register(registerInputDto), HttpStatus.CREATED);
+    @PostMapping(value = "/sign-up")
+    public ResponseEntity<SignUpOutputDto> signUp(@RequestBody SignUpInputDto signUpInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        return new ResponseEntity<>(userService.signUp(signUpInputDto), HttpStatus.CREATED);
     }
-    @PostMapping(value = "/login")
-    public ResponseEntity<LoginOutputDto> login(@RequestBody LoginInputDto loginInputDto) throws JsonProcessingException {
-        return new ResponseEntity<>(userService.login(loginInputDto), HttpStatus.OK);
+    @PostMapping(value = "/sign-in")
+    public ResponseEntity<SignInOutputDto> signIn(@RequestBody SignInInputDto signInInputDto) throws JsonProcessingException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        return new ResponseEntity<>(userService.signIn(signInInputDto), HttpStatus.OK);
     }
     // SELECT
     @GetMapping
@@ -51,7 +51,7 @@ public class UserController {
     }
     // UPDATE
     @PutMapping(value = "/{id}")
-    public ResponseEntity<UserOutputDto> update(@PathVariable Long id, @RequestBody UserInputDto userInputDto) {
+    public ResponseEntity<UserOutputDto> update(@PathVariable Long id, @RequestBody UserInputDto userInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         return new ResponseEntity<>(userService.update(id, userInputDto), HttpStatus.OK);
     }
     // DELETE

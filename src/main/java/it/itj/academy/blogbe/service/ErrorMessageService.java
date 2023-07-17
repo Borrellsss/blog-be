@@ -13,5 +13,7 @@ public interface ErrorMessageService {
     List<ErrorMessageOutputDto> readByValidationCode(String validationCode);
     ErrorMessageOutputDto readByErrorType(String errorType);
     ErrorMessageOutputDto update(Long id, ErrorMessageInputDto errorMessageInputDto);
+    ErrorMessageOutputDto update(String errorType, String validationCode, ErrorMessageInputDto errorMessageInputDto);
+
     void delete(Long id);
 }

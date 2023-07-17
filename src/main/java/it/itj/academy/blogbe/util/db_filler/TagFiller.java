@@ -3,6 +3,7 @@ package it.itj.academy.blogbe.util.db_filler;
 import it.itj.academy.blogbe.entity.Tag;
 import it.itj.academy.blogbe.repository.CategoryRepository;
 import it.itj.academy.blogbe.repository.TagRepository;
+import it.itj.academy.blogbe.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import java.util.Set;
 public class TagFiller {
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     public void fillTags() {
         tagRepository.deleteAll(tagRepository.findAll());
@@ -214,8 +216,8 @@ public class TagFiller {
             new Tag("Moon", List.of(categoryRepository.findByName("Science").get()))
         );
         tags.forEach(tag -> {
-            tag.setCreatedBy(1L);
-            tag.setUpdatedBy(1L);
+            tag.setCreatedBy(userRepository.findByUsername("d.gradassai").get().getId());
+            tag.setUpdatedBy(userRepository.findByUsername("d.bertoldi").get().getId());
         });
         tagRepository.saveAll(tags);
     }

@@ -1,11 +1,9 @@
 package it.itj.academy.blogbe.dto.output.validation;
 
-import it.itj.academy.blogbe.dto.output.error_message.ValidationOutputDto;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor

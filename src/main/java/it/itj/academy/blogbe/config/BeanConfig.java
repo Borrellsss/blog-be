@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
 import it.itj.academy.blogbe.repository.UserRepository;
 import it.itj.academy.blogbe.util.JWTUtil;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.modelmapper.ModelMapper;
@@ -19,6 +22,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @Configuration
 public class BeanConfig {
@@ -49,8 +54,8 @@ public class BeanConfig {
 //                // POST -------------------------------------------------------------------
 //                authorizationManagerRequestMatcherRegistry
 //                    .requestMatchers(HttpMethod.POST,
-//                        "/users/register",
-//                        "/users/login")
+//                        "/users/sign-up",
+//                        "/users/sign-in")
 //                    .permitAll();
 //                // GET --------------------------------------------------------------------
 //                authorizationManagerRequestMatcherRegistry
@@ -76,7 +81,7 @@ public class BeanConfig {
 //                authorizationManagerRequestMatcherRegistry
 //                    .requestMatchers("roles/**", "/validations/**", "error-messages/**")
 //                    .hasAnyRole("ADMIN", "SUPER_ADMIN");
-            }).addFilterBefore((servletRequest, servletResponse, filterChain) -> {
+            }).addFilterBefore((ServletRequest servletRequest,ServletResponse servletResponse, FilterChain filterChain) -> {
                 HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
                 String authorization = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
                 if (authorization != null && authorization.startsWith(jwtUtil.getPrefix())) {
@@ -87,11 +92,10 @@ public class BeanConfig {
                         userRepository.findByUsername(userOutputDto.getUsername())
                             .ifPresent(user ->
                                 SecurityContextHolder.getContext()
-                                    .setAuthentication(new UsernamePasswordAuthenticationToken(user, null, user.getRoles())));
+                                    .setAuthentication(new UsernamePasswordAuthenticationToken(user, null, List.of(user.getRole()))));
                     } catch (Exception e) {
-                        e.printStackTrace();
                         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-                        httpServletResponse.setStatus(400);
+                        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         httpServletResponse.getWriter().write("Invalid Token");
                         return;
                     }

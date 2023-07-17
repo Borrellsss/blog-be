@@ -2,7 +2,7 @@ package it.itj.academy.blogbe.dto.input;
 
 import lombok.*;
 
-import java.util.Set;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,10 +12,10 @@ import java.util.Set;
 public class UserInputDto {
     private String firstName;
     private String lastName;
-    private Byte age;
+    private LocalDate birthdate;
     private String email;
     private String username;
     private String password;
     private String avatar;
-    private Set<Long> roles;
+    private Long role;
 }

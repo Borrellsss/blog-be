@@ -1,6 +1,5 @@
 package it.itj.academy.blogbe.dto.output.category;
 
-import it.itj.academy.blogbe.dto.output.category.CategoryOutputDto;
 import lombok.*;
 
 import java.util.List;

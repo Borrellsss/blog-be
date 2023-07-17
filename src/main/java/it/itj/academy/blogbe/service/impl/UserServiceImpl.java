@@ -2,11 +2,11 @@ package it.itj.academy.blogbe.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.itj.academy.blogbe.dto.input.LoginInputDto;
-import it.itj.academy.blogbe.dto.input.RegisterInputDto;
+import it.itj.academy.blogbe.dto.input.SignInInputDto;
+import it.itj.academy.blogbe.dto.input.SignUpInputDto;
 import it.itj.academy.blogbe.dto.input.UserInputDto;
-import it.itj.academy.blogbe.dto.output.user.LoginOutputDto;
-import it.itj.academy.blogbe.dto.output.user.RegisterOutputDto;
+import it.itj.academy.blogbe.dto.output.user.SignInOutputDto;
+import it.itj.academy.blogbe.dto.output.user.SignUpOutputDto;
 import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
 import it.itj.academy.blogbe.dto.output.user.UserPageableOutputDto;
 import it.itj.academy.blogbe.entity.User;
@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -51,51 +50,52 @@ public class UserServiceImpl implements UserService {
     private final PageableUtil pageableUtil;
 
     @Override
-    public RegisterOutputDto register(RegisterInputDto registerInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        Map<String, String> errors = validatorUtil.validate(registerInputDto);
+    public SignUpOutputDto signUp(SignUpInputDto signUpInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Map<String, String> errors = validatorUtil.validate(signUpInputDto);
         if (!errors.isEmpty()) {
             throw new CustomInvalidFieldException(errors);
         }
-        if (userRepository.findByUsername(registerInputDto.getUsername()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Username (%s) already exists", registerInputDto.getUsername()));
+        if (userRepository.findByUsername(signUpInputDto.getUsername()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Username (%s) already exists", signUpInputDto.getUsername()));
         }
-        if (userRepository.findByEmail(registerInputDto.getEmail()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email (%s) already exists", registerInputDto.getEmail()));
+        if (userRepository.findByEmail(signUpInputDto.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email (%s) already exists", signUpInputDto.getEmail()));
         }
-        User user = modelMapper.map(registerInputDto, User.class);
-        if (registerInputDto.getRoles() == null || registerInputDto.getRoles().isEmpty()) {
+        User user = modelMapper.map(signUpInputDto, User.class);
+        if (signUpInputDto.getRole() == null) {
             if (SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) {
-                user.setRoles(List.of(roleRepository.findByAuthority("ROLE_USER").get()));
+                user.setRole(roleRepository.findByAuthority("ROLE_USER").get());
             } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Roles is required");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role is required");
             }
         } else {
-            user.setRoles(registerInputDto.getRoles()
-                .stream()
-                .map(roleId -> roleRepository.findById(roleId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Role with id %d not found", roleId))))
-                .toList());
+            user.setRole(roleRepository.findById(signUpInputDto.getRole())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Role with id %d not found", signUpInputDto.getRole()))));
         }
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        return modelMapper.map(userRepository.save(user), RegisterOutputDto.class);
+        return modelMapper.map(userRepository.save(user), SignUpOutputDto.class);
     }
     @Override
-    public LoginOutputDto login(LoginInputDto loginInputDto) throws JsonProcessingException {
-        User user = userRepository.findByUsername(loginInputDto.getUsername())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with username %s not found", loginInputDto.getUsername())));
+    public SignInOutputDto signIn(SignInInputDto signInInputDto) throws JsonProcessingException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Map<String, String> errors = validatorUtil.validate(signInInputDto);
+        if (!errors.isEmpty()) {
+            throw new CustomInvalidFieldException(errors);
+        }
+        User user = userRepository.findByUsername(signInInputDto.getUsername())
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with username %s not found", signInInputDto.getUsername())));
         if (user.isDeleted()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with username %s has been deleted", loginInputDto.getUsername()));
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with username %s has been deleted", signInInputDto.getUsername()));
         }
         if (user.isBlocked()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, String.format("This account has been suspended, please contact customer support"));
         }
-        if (!bCryptPasswordEncoder.matches(loginInputDto.getPassword(), user.getPassword())) {
+        if (!bCryptPasswordEncoder.matches(signInInputDto.getPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
         UserOutputDto userOutputDto = modelMapper.map(user, UserOutputDto.class);
         Map<String, String> privateClaim = Map.of("user", objectMapper.writeValueAsString(userOutputDto));;
         String jwt = jwtUtil.generate(user.getUsername(), privateClaim);
-        return new LoginOutputDto(jwt, userOutputDto);
+        return new SignInOutputDto(jwt, userOutputDto);
     }
     @Override
     public UserPageableOutputDto readAll(int page, int size) {
@@ -126,24 +126,25 @@ public class UserServiceImpl implements UserService {
         return userOutputDto;
     }
     @Override
-    public UserOutputDto update(Long id, UserInputDto userInputDto) {
+    public UserOutputDto update(Long id, UserInputDto userInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d not found", id)));
         if (user.isDeleted()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d has been deleted", id));
         }
-        if (userInputDto.getRoles() == null || userInputDto.getRoles().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Roles is required");
+        if (userInputDto.getRole() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role is required");
         } else {
-            user.getRoles().clear();
-            for (Long roleId : userInputDto.getRoles()) {
-                user.getRoles().add(roleRepository.findById(roleId)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Role with id %d not found", roleId))));
-            }
+            user.setRole(roleRepository.findById(userInputDto.getRole())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Role with id %d not found", userInputDto.getRole()))));
+        }
+        Map<String, String> errors = validatorUtil.validate(userInputDto);
+        if (!errors.isEmpty()) {
+            throw new CustomInvalidFieldException(errors);
         }
         user.setFirstName(userInputDto.getFirstName());
         user.setLastName(userInputDto.getLastName());
-        user.setAge(userInputDto.getAge());
+        user.setBirthdate(userInputDto.getBirthdate());
         user.setEmail(userInputDto.getEmail());
         user.setUsername(userInputDto.getUsername());
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));

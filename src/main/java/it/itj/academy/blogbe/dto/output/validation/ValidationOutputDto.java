@@ -15,8 +15,8 @@ public class ValidationOutputDto {
     private Long id;
     private String code;
     private String field;
-    private boolean notNull;
-    private boolean notEmpty;
+    private Boolean notNull;
+    private Boolean notEmpty;
     private Integer min;
     private Integer max;
     private String regex;

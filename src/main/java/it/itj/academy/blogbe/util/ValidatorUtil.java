@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Component
@@ -55,75 +55,127 @@ public class ValidatorUtil {
     }
     private void validateField(Object entity, Field field, Validation validation, Map<String, String> errors) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Object value = getGetter(entity, field).invoke(entity);
-        String errorTypePrefix = getClazz(entity).getSimpleName() + "." + field.getName() + ".";
-        String message;
         if (value == null && validation.getNotNull()) {
-            message = errorMessageRepository.findByErrorType(errorTypePrefix + NOT_NULL)
-                .map(ErrorMessage::getMessage).orElse("Field cannot be null");
-            addError(field.getName(), NOT_NULL, message, errors);
+            validateNull(entity, field, errors);
         }
         if (value instanceof String s) {
-            if (s.isBlank() && validation.getNotEmpty()) {
-                message = errorMessageRepository.findByErrorType(errorTypePrefix + NOT_EMPTY)
-                    .map(ErrorMessage::getMessage).orElse("Field cannot be empty");
-                addError(field.getName(), NOT_EMPTY, message, errors);
-            }
-            if (validation.getMin() != null && s.length() < validation.getMin()) {
-                message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN)
-                    .map(ErrorMessage::getMessage).orElse("Field is too short");
-                addError(field.getName(), MIN, message, errors);
-            }
-            if (validation.getMax() != null && s.length() > validation.getMax()) {
-                message = errorMessageRepository.findByErrorType(errorTypePrefix + MAX)
-                    .map(ErrorMessage::getMessage).orElse("Field is too long");
-                addError(field.getName(), MAX, message, errors);
-            }
-            if (validation.getRegex() != null && !s.matches(validation.getRegex())) {
-                message = errorMessageRepository.findByErrorType(errorTypePrefix + REGEX)
-                    .map(ErrorMessage::getMessage).orElse("Field does not match regex");
-                addError(field.getName(), REGEX, message, errors);
-            }
-            if (validation.getMinUpperCaseLetters() != null && s.chars().filter(Character::isUpperCase).count() < validation.getMinUpperCaseLetters()) {
-                message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN_UPPERCASE_LETTERS)
-                    .map(ErrorMessage::getMessage).orElse("Field does not have enough upper case letters");
-                addError(field.getName(), MIN_UPPERCASE_LETTERS, message, errors);
-            }
-            if (validation.getMinLowerCaseLetters() != null && s.chars().filter(Character::isLowerCase).count() < validation.getMinLowerCaseLetters()) {
-                message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN_LOWERCASE_LETTERS)
-                    .map(ErrorMessage::getMessage).orElse("Field does not have enough lower case letters");
-                addError(field.getName(), MIN_LOWERCASE_LETTERS, message, errors);
-            }
-            if (validation.getMinDigits() != null && s.chars().filter(Character::isDigit).count() < validation.getMinDigits()) {
-                message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN_DIGITS)
-                    .map(ErrorMessage::getMessage).orElse("Field does not have enough digits");
-                addError(field.getName(), MIN_DIGITS, message, errors);
-            }
-            if (validation.getMinSpecialCharacters() != null && s.chars().filter(c -> !Character.isLetterOrDigit(c)).count() < validation.getMinSpecialCharacters()) {
-                message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN_SPECIAL_CHARACTERS)
-                    .map(ErrorMessage::getMessage).orElse("Field does not have enough special characters");
-                addError(field.getName(), MIN_SPECIAL_CHARACTERS, message, errors);
-            }
+            validateString(entity, field, s, validation, errors);
         } else if (value instanceof Number n) {
-            if (validation.getMin() != null && n.intValue() < validation.getMin()) {
-                message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN)
-                    .map(ErrorMessage::getMessage).orElse("Field is too small");
-                addError(field.getName(), MIN, message, errors);
-            }
-            if (validation.getMax() != null && n.intValue() > validation.getMax()) {
-                message = errorMessageRepository.findByErrorType(errorTypePrefix + MAX)
-                    .map(ErrorMessage::getMessage).orElse("Field is too big");
-                addError(field.getName(), MAX, message, errors);
-            }
+            validateNumber(entity, field, n, validation, errors);
+        } else if (value instanceof LocalDate d) {
+            validateLocalDate(entity, field, d, validation, errors);
+        } else if (value instanceof LocalDateTime d) {
+            validateLocalDateTime(entity, field, d, validation, errors);
         } else if (value instanceof Collection<?> c) {
-            if (validation.getNotEmpty() && c.size() == 0) {
-                message = errorMessageRepository.findByErrorType(errorTypePrefix + NOT_EMPTY)
-                    .map(ErrorMessage::getMessage).orElse("Field cannot be empty");
-                addError(field.getName(), NOT_EMPTY, message, errors);
-            }
+            validateCollection(entity, field, c, validation, errors);
+        }
+    }
+    // VALIDATION METHODS
+    // NULL VALIDATION
+    private void validateNull(Object entity, Field field, Map<String, String> errors) {
+        String errorTypePrefix = getErrorTypePrefix(entity, field);
+        String message;
+        System.err.println("ERROR TYPE PREFIX: " + errorTypePrefix);
+        message = errorMessageRepository.findByErrorType(errorTypePrefix + NOT_NULL)
+            .map(ErrorMessage::getMessage).orElse("Field cannot be null");
+        addError(field.getName(), NOT_NULL, message, errors);
+    }
+    // STRING VALIDATION
+    private void validateString(Object entity, Field field, String value, Validation validation, Map<String, String> errors) {
+        String errorTypePrefix = getErrorTypePrefix(entity, field);
+        String message;
+        if (value.isBlank() && validation.getNotEmpty()) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + NOT_EMPTY)
+                .map(ErrorMessage::getMessage).orElse("Field cannot be empty");
+            addError(field.getName(), NOT_EMPTY, message, errors);
+        }
+        if (validation.getMin() != null && value.length() < validation.getMin()) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN)
+                .map(ErrorMessage::getMessage).orElse("Field is too short");
+            addError(field.getName(), MIN, message, errors);
+        }
+        if (validation.getMax() != null && value.length() > validation.getMax()) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + MAX)
+                .map(ErrorMessage::getMessage).orElse("Field is too long");
+            addError(field.getName(), MAX, message, errors);
+        }
+        if (validation.getRegex() != null && !value.matches(validation.getRegex())) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + REGEX)
+                .map(ErrorMessage::getMessage).orElse("Field does not match regex");
+            addError(field.getName(), REGEX, message, errors);
+        }
+        if (validation.getMinUpperCaseLetters() != null && value.chars().filter(Character::isUpperCase).count() < validation.getMinUpperCaseLetters()) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN_UPPERCASE_LETTERS)
+                .map(ErrorMessage::getMessage).orElse("Field does not have enough upper case letters");
+            addError(field.getName(), MIN_UPPERCASE_LETTERS, message, errors);
+        }
+        if (validation.getMinLowerCaseLetters() != null && value.chars().filter(Character::isLowerCase).count() < validation.getMinLowerCaseLetters()) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN_LOWERCASE_LETTERS)
+                .map(ErrorMessage::getMessage).orElse("Field does not have enough lower case letters");
+            addError(field.getName(), MIN_LOWERCASE_LETTERS, message, errors);
+        }
+        if (validation.getMinDigits() != null && value.chars().filter(Character::isDigit).count() < validation.getMinDigits()) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN_DIGITS)
+                .map(ErrorMessage::getMessage).orElse("Field does not have enough digits");
+            addError(field.getName(), MIN_DIGITS, message, errors);
+        }
+        if (validation.getMinSpecialCharacters() != null && value.chars().filter(c -> !Character.isLetterOrDigit(c)).count() < validation.getMinSpecialCharacters()) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN_SPECIAL_CHARACTERS)
+                .map(ErrorMessage::getMessage).orElse("Field does not have enough special characters");
+            addError(field.getName(), MIN_SPECIAL_CHARACTERS, message, errors);
+        }
+    }
+    // NUMBER VALIDATION
+    private void validateNumber(Object entity, Field field, Number value, Validation validation, Map<String, String> errors) {
+        String errorTypePrefix = getErrorTypePrefix(entity, field);
+        String message;
+        if (validation.getMin() != null && value.intValue() < validation.getMin()) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN)
+                .map(ErrorMessage::getMessage).orElse("Field is too small");
+            addError(field.getName(), MIN, message, errors);
+        }
+        if (validation.getMax() != null && value.intValue() > validation.getMax()) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + MAX)
+                .map(ErrorMessage::getMessage).orElse("Field is too big");
+            addError(field.getName(), MAX, message, errors);
+        }
+    }
+    // DATES VALIDATION
+    // LOCALDATE VALIDATION
+    private void validateLocalDate(Object entity, Field field, LocalDate value, Validation validation, Map<String, String> errors) {
+        String errorTypePrefix = getErrorTypePrefix(entity, field);
+        String message;
+        if (validation.getMin() != null && Period.between(value, LocalDate.now()).getYears() < validation.getMin()) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN)
+                .map(ErrorMessage::getMessage).orElse(String.format("Field is too early, must be at least %d years old", validation.getMin()));
+            addError(field.getName(), MIN, message, errors);
+        }
+    }
+    // LOCALDATETIME VALIDATION
+    private void validateLocalDateTime(Object entity, Field field, LocalDateTime value, Validation validation, Map<String, String> errors) {
+        String errorTypePrefix = getErrorTypePrefix(entity, field);
+        String message;
+        if (validation.getMin() != null && Period.between(value.toLocalDate(), LocalDate.now()).getYears() < validation.getMin()) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN)
+                .map(ErrorMessage::getMessage).orElse(String.format("Field is too early, must be at least %d years old", validation.getMin()));
+            addError(field.getName(), MIN, message, errors);
+        }
+    }
+    // COLLECTION VALIDATION
+    private void validateCollection(Object entity, Field field, Collection<?> value, Validation validation, Map<String, String> errors) {
+        String errorTypePrefix = getErrorTypePrefix(entity, field);
+        String message;
+        if (validation.getNotEmpty() && value.size() == 0) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + NOT_EMPTY)
+                .map(ErrorMessage::getMessage).orElse("Field cannot be empty");
+            addError(field.getName(), NOT_EMPTY, message, errors);
         }
     }
     private void addError(String field, String type, String message, Map<String, String> errors) {
         errors.put(String.format("%s (%s)", field, type), message);
+    }
+    private String getErrorTypePrefix(Object entity, Field field) {
+        return getClazz(entity).getSimpleName() + "." + field.getName() + ".";
     }
     private Method getGetter(Object entity, Field field) throws NoSuchMethodException {
         String getter = "get" + Character.toUpperCase(field.getName().charAt(0)) + field.getName().substring(1);

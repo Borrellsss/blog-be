@@ -62,23 +62,8 @@ public class Validation {
     @OneToMany(mappedBy = "validation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ErrorMessage> errorMessages = new ArrayList<>();
 
-    public Validation(String field, Integer min, Integer max) {
-        this.field = field;
-        this.min = min;
-        this.max = max;
-    }
-    public Validation(String field, Boolean notNull, Boolean notEmpty, Integer min, Integer max, Byte minUpperCaseLetters, Byte minLowerCaseLetters, Byte minDigits, Byte minSpecialCharacters) {
-        this.field = field;
-        this.notNull = notNull;
-        this.notEmpty = notEmpty;
-        this.min = min;
-        this.max = max;
-        this.minUpperCaseLetters = minUpperCaseLetters;
-        this.minLowerCaseLetters = minLowerCaseLetters;
-        this.minDigits = minDigits;
-        this.minSpecialCharacters = minSpecialCharacters;
-    }
-    public Validation(String field, Boolean notNull, Boolean notEmpty, Integer min, Integer max, String regex, Byte minUpperCaseLetters, Byte minLowerCaseLetters, Byte minDigits, Byte minSpecialCharacters) {
+    public Validation(String code, String field, Boolean notNull, Boolean notEmpty, Integer min, Integer max, String regex, Byte minUpperCaseLetters, Byte minLowerCaseLetters, Byte minDigits, Byte minSpecialCharacters) {
+        this.code = code;
         this.field = field;
         this.notNull = notNull;
         this.notEmpty = notEmpty;

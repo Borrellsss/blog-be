@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface ErrorMessageRepository extends JpaRepository<ErrorMessage, Long> {
     List<ErrorMessage> findByValidationCode(String validationCode);
     Optional<ErrorMessage> findByErrorType(String errorType);
+    Optional<ErrorMessage> findByErrorTypeAndValidationCode(String errorType, String validationCode);
 }

@@ -56,13 +56,10 @@ public class ErrorMessageServiceImpl implements ErrorMessageService {
             Field field = clazz.getDeclaredField(errorTypeFormat[2]);
             String getter = "get" + Character.toUpperCase(field.getName().charAt(0)) + field.getName().substring(1);
             Method method = clazz.getDeclaredMethod(getter);
-            if (method.invoke(validation) != null && !method.invoke(validation).equals(false)) {
-                return true;
-            }
+            return method.invoke(validation) != null && !method.invoke(validation).equals(false);
         } catch (NoSuchFieldException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             return false;
         }
-        return false;
     }
     @Override
     public ErrorMessageOutputDto create(ErrorMessageInputDto errorMessageInputDto) {
@@ -115,6 +112,15 @@ public class ErrorMessageServiceImpl implements ErrorMessageService {
     public ErrorMessageOutputDto update(Long id, ErrorMessageInputDto errorMessageInputDto) {
         ErrorMessage errorMessage = errorMessageRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Error message with id %d not found", id)));
+        errorMessage.setMessage(errorMessageInputDto.getMessage());
+        ErrorMessageOutputDto errorMessageOutputDto = modelMapper.map(errorMessageRepository.save(errorMessage), ErrorMessageOutputDto.class);
+        errorMessageOutputDto.setValidationCode(errorMessage.getValidation().getCode());
+        return errorMessageOutputDto;
+    }
+    @Override
+    public ErrorMessageOutputDto update(String errorType, String validationCode, ErrorMessageInputDto errorMessageInputDto) {
+        ErrorMessage errorMessage = errorMessageRepository.findByErrorTypeAndValidationCode(errorType, validationCode)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Error message with type %s and validation code %s not found", errorType, validationCode)));
         errorMessage.setMessage(errorMessageInputDto.getMessage());
         ErrorMessageOutputDto errorMessageOutputDto = modelMapper.map(errorMessageRepository.save(errorMessage), ErrorMessageOutputDto.class);
         errorMessageOutputDto.setValidationCode(errorMessage.getValidation().getCode());

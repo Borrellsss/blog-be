@@ -2,6 +2,7 @@ package it.itj.academy.blogbe.dto.input;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -9,13 +10,13 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-public class RegisterInputDto {
+public class SignUpInputDto {
     private String firstName;
     private String lastName;
-    private Byte age;
+    private LocalDate birthdate;
     private String email;
     private String username;
     private String password;
     private String avatar;
-    private Set<Long> roles;
+    private Long role;
 }

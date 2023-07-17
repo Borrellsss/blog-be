@@ -21,7 +21,7 @@ public class Role implements GrantedAuthority {
     @Column(length = 50, nullable = false, unique = true)
     private String authority;
     // RELATIONSHIPS
-    @ManyToMany(mappedBy = "roles", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
     private List<User> users = new ArrayList<>();
 
     public Role(String authority) {

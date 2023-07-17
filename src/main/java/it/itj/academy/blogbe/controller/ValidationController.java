@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -37,6 +39,10 @@ public class ValidationController {
     @GetMapping(value = "/field/{field}")
     public ResponseEntity<ValidationOutputDto> readByField(@PathVariable String field) {
         return new ResponseEntity<>(validationService.readByField(field), HttpStatus.OK);
+    }
+    @GetMapping(value = "/field-starts-with/{field}")
+    public ResponseEntity<List<ValidationOutputDto>> readByFieldStartsWith(@PathVariable String field) {
+        return new ResponseEntity<>(validationService.readByFieldStartsWith(field), HttpStatus.OK);
     }
     // UPDATE
     @PutMapping(value = "/{code}")

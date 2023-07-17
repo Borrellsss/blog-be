@@ -11,6 +11,7 @@ import java.util.Set;
 @Component
 public class RoleFiller {
     private final RoleRepository roleRepository;
+
     public void fillRoles() {
         roleRepository.deleteAll(roleRepository.findAll());
         Set<Role> roles = Set.of(

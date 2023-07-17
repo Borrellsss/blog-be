@@ -2,6 +2,7 @@ package it.itj.academy.blogbe.util.db_filler;
 
 import it.itj.academy.blogbe.entity.Category;
 import it.itj.academy.blogbe.repository.CategoryRepository;
+import it.itj.academy.blogbe.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import java.util.Set;
 @Component
 public class CategoryFiller {
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     public void fillCategories() {
         categoryRepository.deleteAll(categoryRepository.findAll());
@@ -65,8 +67,8 @@ public class CategoryFiller {
             new Category("Automotive")
         );
         categories.forEach(category -> {
-            category.setCreatedBy(1L);
-            category.setUpdatedBy(1L);
+            category.setCreatedBy(userRepository.findByUsername("d.giannetti").get().getId());
+            category.setUpdatedBy(userRepository.findByUsername("d.giannetti").get().getId());
         });
         categoryRepository.saveAll(categories);
     }

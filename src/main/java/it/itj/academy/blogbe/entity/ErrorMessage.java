@@ -27,7 +27,7 @@ public class ErrorMessage {
     private Long id;
     @Column(name = "error_type", nullable = false, unique = true)
     private String errorType;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String message;
     @Column(name = "created_by")
     @CreatedBy
@@ -43,7 +43,7 @@ public class ErrorMessage {
     private LocalDateTime updatedAt;
     // RELATIONSHIPS
     @ManyToOne
-    @JoinColumn(name = "validation_code", nullable = false)
+    @JoinColumn(name = "validation_id", nullable = false)
     private Validation validation;
 
     public ErrorMessage(String errorType, String message, Validation validation) {

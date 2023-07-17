@@ -32,7 +32,7 @@ public class User {
     @Column(name = "last_name", length = 50, nullable = false)
     private String lastName;
     @Column(nullable = false)
-    private Byte age;
+    private LocalDate birthdate;
     @Column(length = 50, nullable = false, unique = true)
     private String email;
     @Column(length = 50, nullable = false, unique = true)
@@ -57,34 +57,31 @@ public class User {
     @LastModifiedDate
     private LocalDateTime updatedAt;
     // RELATIONSHIPS
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "role_user",
-        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private List<Role> roles;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Post> posts = new ArrayList<>();
     @OneToMany(mappedBy = "user")
     private List<Vote> votes = new ArrayList<>();
 
-    public User(String firstName, String lastName, Byte age, String email, String username, String password, List<Role> roles) {
+    public User(String firstName, String lastName, LocalDate birthdate, String email, String username, String password, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.age = age;
+        this.birthdate = birthdate;
         this.email = email;
         this.username = username;
         this.password = password;
-        this.roles = roles;
+        this.role = role;
     }
-    public User(String firstName, String lastName, Byte age, String email, String username, String password, String avatar, List<Role> roles) {
+    public User(String firstName, String lastName, LocalDate birthdate, String email, String username, String password, String avatar, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.age = age;
+        this.birthdate = birthdate;
         this.email = email;
         this.username = username;
         this.password = password;
         this.avatar = avatar;
-        this.roles = roles;
+        this.role = role;
     }
 }

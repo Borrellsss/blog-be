@@ -12,12 +12,16 @@ public class DBFiller {
     private final UserFiller userFiller;
     private final CategoryFiller categoryFiller;
     private final TagFiller tagFiller;
+    private final ValidationFiller validationFiller;
+    private final ErrorMessageFiller errorMessageFiller;
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
-//        roleFiller.fillRoles();
-//        userFiller.fillUsers();
-//        categoryFiller.fillCategories();
-//        tagFiller.fillTags();
+        roleFiller.fillRoles();
+        userFiller.fillUsers();
+        categoryFiller.fillCategories();
+        tagFiller.fillTags();
+        validationFiller.fillValidations();
+        errorMessageFiller.fillErrorMessages();
     }
 }

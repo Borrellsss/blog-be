@@ -10,4 +10,6 @@ public interface ValidationRepository extends JpaRepository<Validation, Long> {
     Optional<Validation> findByCode(String code);
     Optional<Validation> findByField(String field);
     List<Validation> findByFieldStartsWith(String field);
+    boolean existsByCode(String code);
+    boolean existsByField(String field);
 }

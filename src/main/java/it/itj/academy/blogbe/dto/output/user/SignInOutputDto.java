@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class LoginOutputDto {
+public class SignInOutputDto {
     private String jwt;
     private UserOutputDto user;
 }
