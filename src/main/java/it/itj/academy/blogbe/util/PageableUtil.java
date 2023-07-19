@@ -4,6 +4,8 @@ import it.itj.academy.blogbe.dto.output.category.CategoryOutputDto;
 import it.itj.academy.blogbe.dto.output.category.CategoryPageableOutputDto;
 import it.itj.academy.blogbe.dto.output.error_message.ErrorMessageOutputDto;
 import it.itj.academy.blogbe.dto.output.error_message.ErrorMessagePageableOutputDto;
+import it.itj.academy.blogbe.dto.output.post.PostOutputDto;
+import it.itj.academy.blogbe.dto.output.post.PostPageableOutputDto;
 import it.itj.academy.blogbe.dto.output.tag.TagOutputDto;
 import it.itj.academy.blogbe.dto.output.tag.TagPageableOutputDto;
 import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
@@ -90,6 +92,19 @@ public class PageableUtil {
             return tagPageableOutputDto;
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tags not found");
+        }
+    }
+    public PostPageableOutputDto postPageableOutputDto(Page<Post> posts) {
+        if (posts.hasContent()) {
+            PostPageableOutputDto postPageableOutputDto = new PostPageableOutputDto();
+            postPageableOutputDto.setPosts(posts.stream()
+                .map(post -> modelMapper.map(post, PostOutputDto.class))
+                .toList());
+            postPageableOutputDto.setTotalPages(posts.getTotalPages());
+            postPageableOutputDto.setTotalElements(posts.getTotalElements());
+            return postPageableOutputDto;
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Posts not found");
         }
     }
 }

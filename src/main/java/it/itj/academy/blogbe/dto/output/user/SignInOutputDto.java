@@ -9,5 +9,4 @@ import lombok.*;
 @ToString
 public class SignInOutputDto {
     private String jwt;
-    private UserOutputDto user;
 }

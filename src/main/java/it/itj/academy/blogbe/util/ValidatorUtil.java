@@ -75,7 +75,6 @@ public class ValidatorUtil {
     private void validateNull(Object entity, Field field, Map<String, String> errors) {
         String errorTypePrefix = getErrorTypePrefix(entity, field);
         String message;
-        System.err.println("ERROR TYPE PREFIX: " + errorTypePrefix);
         message = errorMessageRepository.findByErrorType(errorTypePrefix + NOT_NULL)
             .map(ErrorMessage::getMessage).orElse("Field cannot be null");
         addError(field.getName(), NOT_NULL, message, errors);
@@ -84,7 +83,7 @@ public class ValidatorUtil {
     private void validateString(Object entity, Field field, String value, Validation validation, Map<String, String> errors) {
         String errorTypePrefix = getErrorTypePrefix(entity, field);
         String message;
-        if (value.isBlank() && validation.getNotEmpty()) {
+        if (validation.getNotEmpty() && value.isBlank()) {
             message = errorMessageRepository.findByErrorType(errorTypePrefix + NOT_EMPTY)
                 .map(ErrorMessage::getMessage).orElse("Field cannot be empty");
             addError(field.getName(), NOT_EMPTY, message, errors);
@@ -99,7 +98,7 @@ public class ValidatorUtil {
                 .map(ErrorMessage::getMessage).orElse("Field is too long");
             addError(field.getName(), MAX, message, errors);
         }
-        if (validation.getRegex() != null && !value.matches(validation.getRegex())) {
+        if (validation.getRegex() != null && !value.isBlank() && !value.matches(validation.getRegex())) {
             message = errorMessageRepository.findByErrorType(errorTypePrefix + REGEX)
                 .map(ErrorMessage::getMessage).orElse("Field does not match regex");
             addError(field.getName(), REGEX, message, errors);

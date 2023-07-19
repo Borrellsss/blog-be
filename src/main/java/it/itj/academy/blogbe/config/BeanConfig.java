@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -51,35 +52,44 @@ public class BeanConfig {
                 authorizationManagerRequestMatcherRegistry
                     .requestMatchers("/**")
                     .permitAll();
-//                // POST -------------------------------------------------------------------
+                // POST -------------------------------------------------------------------
 //                authorizationManagerRequestMatcherRegistry
 //                    .requestMatchers(HttpMethod.POST,
 //                        "/users/sign-up",
-//                        "/users/sign-in")
+//                        "/users/sign-in",
+//                        "/error/**")
 //                    .permitAll();
-//                // GET --------------------------------------------------------------------
+                // GET --------------------------------------------------------------------
 //                authorizationManagerRequestMatcherRegistry
-//                    .requestMatchers(HttpMethod.GET,
-//                        "/users")
-//                    .hasAnyRole("ADMIN", "SUPER_ADMIN");
-//                authorizationManagerRequestMatcherRegistry
-//                    .requestMatchers(HttpMethod.GET,
+//                    .requestMatchers(
+//                        HttpMethod.GET,
+//                        "/users",
 //                        "/users/{id}",
-//                        "/users/username/{username}")
+//                        "/users/username/{username}",
+//                        "/validations/{field}/{value}"
+//                    )
 //                    .hasAnyRole("USER", "MODERATOR", "ADMIN", "SUPER_ADMIN");
-//                // UPDATE -----------------------------------------------------------------
+                // UPDATE -----------------------------------------------------------------
 //                authorizationManagerRequestMatcherRegistry
-//                    .requestMatchers(HttpMethod.PUT,
-//                        "/users/id/{id}")
+//                    .requestMatchers(
+//                        HttpMethod.PUT,
+//                        "/users/id/{id}"
+//                    )
 //                    .hasAnyRole("USER", "MODERATOR", "ADMIN", "SUPER_ADMIN");
-//                // DELETE -----------------------------------------------------------------
+                // DELETE -----------------------------------------------------------------
 //                authorizationManagerRequestMatcherRegistry
-//                    .requestMatchers(HttpMethod.DELETE,
-//                        "/users/{id}")
+//                    .requestMatchers(
+//                        HttpMethod.DELETE,
+//                        "/users/{id}"
+//                    )
 //                    .hasAnyRole("USER", "MODERATOR", "ADMIN", "SUPER_ADMIN");
-//                // ALL --------------------------------------------------------------------
+                // ALL --------------------------------------------------------------------
 //                authorizationManagerRequestMatcherRegistry
-//                    .requestMatchers("roles/**", "/validations/**", "error-messages/**")
+//                    .requestMatchers(
+//                        "roles/**",
+//                        "/validations/**",
+//                        "error-messages/**"
+//                    )
 //                    .hasAnyRole("ADMIN", "SUPER_ADMIN");
             }).addFilterBefore((ServletRequest servletRequest,ServletResponse servletResponse, FilterChain filterChain) -> {
                 HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;

@@ -113,18 +113,20 @@ public class ErrorMessageServiceImpl implements ErrorMessageService {
         ErrorMessage errorMessage = errorMessageRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Error message with id %d not found", id)));
         errorMessage.setMessage(errorMessageInputDto.getMessage());
-        ErrorMessageOutputDto errorMessageOutputDto = modelMapper.map(errorMessageRepository.save(errorMessage), ErrorMessageOutputDto.class);
-        errorMessageOutputDto.setValidationCode(errorMessage.getValidation().getCode());
-        return errorMessageOutputDto;
+        errorMessageRepository.save(errorMessage);
+        errorMessageRepository.flush();
+        ErrorMessageOutputDto errorMessageOutputDto = modelMapper.map(errorMessageRepository.findById(id), ErrorMessageOutputDto.class);
+        return modelMapper.map(errorMessageOutputDto, ErrorMessageOutputDto.class);
     }
     @Override
     public ErrorMessageOutputDto update(String errorType, String validationCode, ErrorMessageInputDto errorMessageInputDto) {
         ErrorMessage errorMessage = errorMessageRepository.findByErrorTypeAndValidationCode(errorType, validationCode)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Error message with type %s and validation code %s not found", errorType, validationCode)));
         errorMessage.setMessage(errorMessageInputDto.getMessage());
-        ErrorMessageOutputDto errorMessageOutputDto = modelMapper.map(errorMessageRepository.save(errorMessage), ErrorMessageOutputDto.class);
-        errorMessageOutputDto.setValidationCode(errorMessage.getValidation().getCode());
-        return errorMessageOutputDto;
+        errorMessageRepository.save(errorMessage);
+        errorMessageRepository.flush();
+        ErrorMessageOutputDto errorMessageOutputDto = modelMapper.map(errorMessageRepository.findByErrorType(errorType), ErrorMessageOutputDto.class);
+        return modelMapper.map(errorMessageOutputDto, ErrorMessageOutputDto.class);
     }
     @Override
     public void delete(Long id) {

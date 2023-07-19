@@ -27,7 +27,7 @@ public class ErrorMessage {
     private Long id;
     @Column(name = "error_type", nullable = false, unique = true)
     private String errorType;
-    @Column(nullable = false)
+    @Column(length = 150, nullable = false)
     private String message;
     @Column(name = "created_by")
     @CreatedBy

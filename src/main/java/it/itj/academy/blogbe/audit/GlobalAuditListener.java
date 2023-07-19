@@ -53,24 +53,26 @@ public class GlobalAuditListener {
     private void setCreatedBy(Object entity) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         Class<?> clazz = getClazz(entity);
         for (Field field : clazz.getDeclaredFields()) {
-            if (field.getAnnotation(CreatedBy.class) != null && getGetter(entity, field).invoke(entity) == null) {
-                setPrincipalOrUserId(entity, getSetter(entity, field));
+            if (field.getAnnotation(CreatedBy.class) != null) {
+                setPrincipalOrUserId(entity, getGetter(entity, field), getSetter(entity, field));
             }
         }
     }
     private void setLastModifiedBy(Object entity) throws NoSuchMethodException, NoSuchFieldException, InvocationTargetException, IllegalAccessException {
         Class<?> clazz = getClazz(entity);
         for (Field field : clazz.getDeclaredFields()) {
-            if (field.getAnnotation(LastModifiedBy.class) != null && getGetter(entity, field).invoke(entity) == null) {
-                setPrincipalOrUserId(entity, getSetter(entity, field));
+            if (field.getAnnotation(LastModifiedBy.class) != null) {
+                setPrincipalOrUserId(entity, getGetter(entity, field), getSetter(entity, field));
             }
         }
     }
-    private void setPrincipalOrUserId(Object entity, Method setter) throws NoSuchFieldException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    private void setPrincipalOrUserId(Object entity, Method getter, Method setter) throws NoSuchFieldException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         Class<?> clazz = getClazz(entity);
-        if (SecurityContextHolder.getContext().getAuthentication() == null || SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) {
-            Method getter = getGetter(entity, clazz.getDeclaredField("id"));
-            setter.invoke(entity, getter.invoke(entity));
+        if (SecurityContextHolder.getContext().getAuthentication() == null ||
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) {
+            if (getter.invoke(entity) == null) {
+                setter.invoke(entity, getGetter(entity, clazz.getDeclaredField("id")).invoke(entity));
+            }
         } else {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             setter.invoke(entity, principal.getId());

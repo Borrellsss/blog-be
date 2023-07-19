@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
         UserOutputDto userOutputDto = modelMapper.map(user, UserOutputDto.class);
         Map<String, String> privateClaim = Map.of("user", objectMapper.writeValueAsString(userOutputDto));;
         String jwt = jwtUtil.generate(user.getUsername(), privateClaim);
-        return new SignInOutputDto(jwt, userOutputDto);
+        return new SignInOutputDto(jwt);
     }
     @Override
     public UserPageableOutputDto readAll(int page, int size) {
