@@ -27,9 +27,9 @@ public class Post {
     private Long id;
     @Column(length = 150, nullable = false, unique = true)
     private String title;
-    @Column(nullable = false, unique = true, columnDefinition = "TEXT")
+    @Column(nullable = false, unique = true, columnDefinition = "LONGTEXT")
     private String content;
-    private boolean valid = false;
+    private Boolean valid = false;
     @Column(name = "verified_by")
     private Long verifiedBy;
     @Column(name = "verified_at")

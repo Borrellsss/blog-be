@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 @RequestMapping(value = "/categories")
 public class CategoryController {
     private final CategoryService categoryService;
-    private final int PAGE_SIZE = 20;
+    private final int PAGE_SIZE = 15;
 
     // INSERT
     @PostMapping

@@ -29,10 +29,14 @@ public class PostController {
     }
     // SELECT
     @GetMapping
-    public ResponseEntity<PostPageableOutputDto> readAllByOrderByCreatedAtDesc(@RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        return new ResponseEntity<>(postService.readAllByOrderByCreatedAtDesc(page, pageable.getPageSize()), HttpStatus.OK);
+    public ResponseEntity<PostPageableOutputDto> findAllByOrderByUpdatedAtDesc(@RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        return new ResponseEntity<>(postService.readAllByOrderByUpdatedAtDesc(page, pageable.getPageSize()), HttpStatus.OK);
     }
-    @GetMapping(value = "/{title}")
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<PostOutputDto> readById(@PathVariable Long id) {
+        return new ResponseEntity<>(postService.readById(id), HttpStatus.OK);
+    }
+    @GetMapping(value = "title/{title}")
     public ResponseEntity<PostOutputDto> readByTitle(@PathVariable String title) {
         return new ResponseEntity<>(postService.readByTitle(title), HttpStatus.OK);
     }

@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 @RequestMapping(value = "/tags")
 public class TagController {
     private final TagService tagService;
-    private final int PAGE_SIZE = 40;
+    private final int PAGE_SIZE = 30;
 
     // INSERT
     @PostMapping

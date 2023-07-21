@@ -8,7 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 
 public interface PostService {
     PostOutputDto create(PostInputDto postInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
-    PostPageableOutputDto readAllByOrderByCreatedAtDesc(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+    PostOutputDto readById(Long id);
+    PostPageableOutputDto readAllByOrderByUpdatedAtDesc(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
     PostOutputDto readByTitle(String title);
     PostPageableOutputDto readByTitleContaining(String title, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
     PostPageableOutputDto readByCategoryId(Long categoryId, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;

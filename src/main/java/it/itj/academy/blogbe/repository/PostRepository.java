@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<Post> findAllByOrderByUpdatedAtDesc(Pageable pageable);
     Optional<Post> findByTitle(String title);
     Page<Post> findByTitleContaining(String title, Pageable pageable);
     Page<Post> findByCategoryId(Long categoryId, Pageable pageable);

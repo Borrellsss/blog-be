@@ -17,11 +17,11 @@ public class DBFiller {
 
     @EventListener
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        roleFiller.fillRoles();
-        userFiller.fillUsers();
-        categoryFiller.fillCategories();
-        tagFiller.fillTags();
-        validationFiller.fillValidations();
-        errorMessageFiller.fillErrorMessages();
+//        roleFiller.fillRoles();
+//        userFiller.fillUsers();
+//        categoryFiller.fillCategories();
+//        tagFiller.fillTags();
+//        validationFiller.fillValidations();
+//        errorMessageFiller.fillErrorMessages();
     }
 }

@@ -6,6 +6,7 @@ import it.itj.academy.blogbe.dto.output.post.PostPageableOutputDto;
 import it.itj.academy.blogbe.entity.Category;
 import it.itj.academy.blogbe.entity.Post;
 import it.itj.academy.blogbe.entity.Tag;
+import it.itj.academy.blogbe.entity.User;
 import it.itj.academy.blogbe.exception.CustomInvalidFieldException;
 import it.itj.academy.blogbe.repository.CategoryRepository;
 import it.itj.academy.blogbe.repository.PostRepository;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -66,14 +68,21 @@ public class PostServiceImpl implements PostService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Tag with ids %s do not match the category %s", remainingTagIds, category.getName()));
         }
         Post post = modelMapper.map(postInputDto, Post.class);
+        post.setUser((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         post.setCategory(category);
         post.setTags(tagRepository.findAllById(postInputDto.getTags()));
         return modelMapper.map(postRepository.save(post), PostOutputDto.class);
     }
     @Override
-    public PostPageableOutputDto readAllByOrderByCreatedAtDesc(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public PostOutputDto readById(Long id) {
+        Post post = postRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Post with id %d not found", id)));
+        return modelMapper.map(post, PostOutputDto.class);
+    }
+    @Override
+    public PostPageableOutputDto readAllByOrderByUpdatedAtDesc(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<Post> posts = postRepository.findAllByOrderByUpdatedAtDesc(pageable);
         PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
         outputDtoResponseUtil.filter(postPageableOutputDto);
         return postPageableOutputDto;

@@ -57,6 +57,7 @@ public class ValidationServiceImpl implements ValidationService {
             Class<?> clazz = Class.forName(String.format("it.itj.academy.blogbe.dto.input.%s", fieldClass[0]));
             clazz.getDeclaredField(fieldClass[1]);
         } catch (ClassNotFoundException | NoSuchFieldException e) {
+            e.printStackTrace();
             return false;
         }
         return true;

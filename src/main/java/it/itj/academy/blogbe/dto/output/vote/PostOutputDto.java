@@ -1,6 +1,7 @@
-package it.itj.academy.blogbe.dto.output.post;
+package it.itj.academy.blogbe.dto.output.vote;
 
-import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
+import it.itj.academy.blogbe.dto.output.post.CategoryOutputDto;
+import it.itj.academy.blogbe.dto.output.post.TagOutputDto;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -24,5 +25,4 @@ public class PostOutputDto {
     private UserOutputDto user;
     private CategoryOutputDto category;
     private List<TagOutputDto> tags;
-    private List<VoteOutputDto> votes;
 }
