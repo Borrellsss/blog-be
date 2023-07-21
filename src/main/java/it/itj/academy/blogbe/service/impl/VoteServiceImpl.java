@@ -65,8 +65,6 @@ public class VoteServiceImpl implements VoteService {
         }
         Post post = postRepository.findById(voteInputDto.getPost())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
-        vote.setUser(loggedUser);
-        vote.setPost(post);
         vote.setLiked(voteInputDto.getLiked());
         return modelMapper.map(voteRepository.save(vote), VoteOutputDto.class);
     }

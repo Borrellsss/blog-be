@@ -1,12 +1,10 @@
 package it.itj.academy.blogbe.dto.output.user;
 
-import it.itj.academy.blogbe.dto.output.post.PostOutputDto;
 import it.itj.academy.blogbe.dto.output.role.RoleOutputDto;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,5 +26,4 @@ public class UserOutputDto {
     private LocalDate createdAt;
     private LocalDateTime updatedAt;
     private RoleOutputDto role;
-    private List<PostOutputDto> posts;
 }

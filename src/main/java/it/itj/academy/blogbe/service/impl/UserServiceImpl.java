@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
         UserOutputDto userOutputDto = modelMapper.map(user, UserOutputDto.class);
-        Map<String, String> privateClaim = Map.of("user", objectMapper.writeValueAsString(userOutputDto));;
+        Map<String, String> privateClaim = Map.of("user", objectMapper.writeValueAsString(userOutputDto));
         String jwt = jwtUtil.generate(user.getUsername(), privateClaim);
         return new SignInOutputDto(jwt);
     }
