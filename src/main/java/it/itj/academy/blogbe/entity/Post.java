@@ -55,6 +55,8 @@ public class Post {
     private List<Tag> tags;
     @OneToMany(mappedBy = "post")
     private List<Vote> votes = new ArrayList<>();
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments = new ArrayList<>();
 
     public Post(String title, String content, User user, Category category, List<Tag> tags) {
         this.title = title;

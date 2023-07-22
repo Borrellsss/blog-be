@@ -1,6 +1,5 @@
 package it.itj.academy.blogbe.controller;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import it.itj.academy.blogbe.dto.input.VoteInputDto;
 import it.itj.academy.blogbe.dto.output.vote.VoteOutputDto;
 import it.itj.academy.blogbe.service.VoteService;
@@ -23,9 +22,13 @@ public class VoteController {
         return new ResponseEntity<>(voteService.create(voteInputDto), HttpStatus.CREATED);
     }
     // SELECT
+    @GetMapping(value = "/{user}/{post}")
+    public ResponseEntity<VoteOutputDto> readByUserIdAndPostId(@PathVariable Long user, @PathVariable Long post) {
+        return new ResponseEntity<>(voteService.readByUserIdAndPostId(user, post), HttpStatus.OK);
+    }
     @GetMapping
-    public ResponseEntity<Long> countPostLikes(Long postId, Boolean liked) {
-        return new ResponseEntity<>(voteService.countPostLikes(postId, liked), HttpStatus.OK);
+    public ResponseEntity<Long> countPostLikes(@RequestParam Long post, @RequestParam Boolean liked) {
+        return new ResponseEntity<>(voteService.countPostLikes(post, liked), HttpStatus.OK);
     }
     // UPDATE
     @PutMapping

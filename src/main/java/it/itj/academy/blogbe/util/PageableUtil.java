@@ -4,6 +4,8 @@ import it.itj.academy.blogbe.dto.output.category.CategoryOutputDto;
 import it.itj.academy.blogbe.dto.output.category.CategoryPageableOutputDto;
 import it.itj.academy.blogbe.dto.output.error_message.ErrorMessageOutputDto;
 import it.itj.academy.blogbe.dto.output.error_message.ErrorMessagePageableOutputDto;
+import it.itj.academy.blogbe.dto.output.post.CommentOutputDto;
+import it.itj.academy.blogbe.dto.output.post.CommentPageableOutputDto;
 import it.itj.academy.blogbe.dto.output.post.PostOutputDto;
 import it.itj.academy.blogbe.dto.output.post.PostPageableOutputDto;
 import it.itj.academy.blogbe.dto.output.tag.TagOutputDto;
@@ -105,6 +107,19 @@ public class PageableUtil {
             return postPageableOutputDto;
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Posts not found");
+        }
+    }
+    public CommentPageableOutputDto commentPageableOutputDto(Page<Comment> comments) {
+        if (comments.hasContent()) {
+            CommentPageableOutputDto commentPageableOutputDto = new CommentPageableOutputDto();
+            commentPageableOutputDto.setComments(comments.stream()
+                .map(comment -> modelMapper.map(comment, CommentOutputDto.class))
+                .toList());
+            commentPageableOutputDto.setTotalPages(comments.getTotalPages());
+            commentPageableOutputDto.setTotalElements(comments.getTotalElements());
+            return commentPageableOutputDto;
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Comments not found");
         }
     }
 }

@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = {"posts", "votes"})
+@ToString(exclude = {"posts", "votes", "comments"})
 @EntityListeners(value = {
     GlobalAuditListener.class
 })
@@ -64,6 +64,8 @@ public class User {
     private List<Post> posts = new ArrayList<>();
     @OneToMany(mappedBy = "user")
     private List<Vote> votes = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments = new ArrayList<>();
 
     public User(String firstName, String lastName, LocalDate birthdate, String email, String username, String password, Role role) {
         this.firstName = firstName;

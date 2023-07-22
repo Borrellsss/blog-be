@@ -1,5 +1,6 @@
-package it.itj.academy.blogbe.dto.output.post;
+package it.itj.academy.blogbe.dto.output.comment;
 
+import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -10,11 +11,11 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class TagOutputDto {
+public class CommentOutputDto {
     private Long id;
-    private String name;
-    private Long createdBy;
-    private Long updatedBy;
+    private String content;
     private LocalDate createdAt;
     private LocalDateTime updatedAt;
+    private PostOutputDto post;
+    private UserOutputDto user;
 }

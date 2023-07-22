@@ -1,7 +1,8 @@
-package it.itj.academy.blogbe.dto.output.vote;
+package it.itj.academy.blogbe.dto.output.comment;
 
-import it.itj.academy.blogbe.dto.output.post.CategoryOutputDto;
-import it.itj.academy.blogbe.dto.output.post.TagOutputDto;
+import it.itj.academy.blogbe.dto.output.category.TagOutputDto;
+import it.itj.academy.blogbe.dto.output.tag.CategoryOutputDto;
+import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
 import lombok.*;
 
 import java.time.LocalDate;

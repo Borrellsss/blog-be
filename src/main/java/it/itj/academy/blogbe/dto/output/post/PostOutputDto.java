@@ -1,5 +1,7 @@
 package it.itj.academy.blogbe.dto.output.post;
 
+import it.itj.academy.blogbe.dto.output.category.TagOutputDto;
+import it.itj.academy.blogbe.dto.output.tag.CategoryOutputDto;
 import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
 import lombok.*;
 

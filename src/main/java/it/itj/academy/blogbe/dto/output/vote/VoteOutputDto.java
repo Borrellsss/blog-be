@@ -1,5 +1,7 @@
 package it.itj.academy.blogbe.dto.output.vote;
 
+import it.itj.academy.blogbe.dto.output.comment.PostOutputDto;
+import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
 import lombok.*;
 
 import java.time.LocalDate;
