@@ -74,88 +74,136 @@ public class PostServiceImpl implements PostService {
         return modelMapper.map(postRepository.save(post), PostOutputDto.class);
     }
     @Override
-    public PostOutputDto readById(Long id) {
-        Post post = postRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Post with id %d not found", id)));
-        return modelMapper.map(post, PostOutputDto.class);
-    }
-    @Override
-    public PostPageableOutputDto readAllByOrderByUpdatedAtDesc(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public PostPageableOutputDto readAllByOrderByCommentsDesc(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAllByOrderByUpdatedAtDesc(pageable);
+        Page<Post> posts = postRepository.findAllByOrderByCommentsDesc(pageable);
         PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
         outputDtoResponseUtil.filter(postPageableOutputDto);
         return postPageableOutputDto;
+    }
+    @Override
+    public PostPageableOutputDto readAllByVotesIsTrueOrderByVotesDesc(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAllByVotesIsTrueOrderByVotesDesc(pageable);
+        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
+        outputDtoResponseUtil.filter(postPageableOutputDto);
+        return postPageableOutputDto;
+    }
+    @Override
+    public PostPageableOutputDto readAllByOrderByCreatedAtDesc(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAllByOrderByCreatedAtDesc(pageable);
+        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
+        outputDtoResponseUtil.filter(postPageableOutputDto);
+        return postPageableOutputDto;
+    }
+    @Override
+    public PostPageableOutputDto readAllByTitleContainingOrderByCreatedAtDesc(String title, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAllByTitleContainingOrderByCreatedAtDesc(title, pageable);
+        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
+        outputDtoResponseUtil.filter(postPageableOutputDto);
+        return postPageableOutputDto;
+    }
+    @Override
+    public PostPageableOutputDto readAllByCategoryIdOrderByCreatedAtDesc(Long categoryId, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAllByCategoryIdOrderByCreatedAtDesc(categoryId, pageable);
+        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
+        outputDtoResponseUtil.filter(postPageableOutputDto);
+        return postPageableOutputDto;
+    }
+    @Override
+    public PostPageableOutputDto readAllByCategoryNameOrderByCreatedAtDesc(String categoryName, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAllByCategoryNameOrderByCreatedAtDesc(categoryName, pageable);
+        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
+        outputDtoResponseUtil.filter(postPageableOutputDto);
+        return postPageableOutputDto;
+    }
+    @Override
+    public PostPageableOutputDto readAllByCategoryNameAndTitleContainingOrderByCreatedAtDesc(String categoryName, String title, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAllByCategoryNameAndTitleContainingOrderByCreatedAtDesc(categoryName, title, pageable);
+        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
+        outputDtoResponseUtil.filter(postPageableOutputDto);
+        return postPageableOutputDto;
+    }
+    @Override
+    public PostPageableOutputDto readAllByTagsIdOrderByCreatedAtDesc(Long tagId, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAllByTagsIdOrderByCreatedAtDesc(tagId, pageable);
+        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
+        outputDtoResponseUtil.filter(postPageableOutputDto);
+        return postPageableOutputDto;
+    }
+    @Override
+    public PostPageableOutputDto readAllByTagsNameOrderByCreatedAtDesc(String tagName, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAllByTagsNameOrderByCreatedAtDesc(tagName, pageable);
+        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
+        outputDtoResponseUtil.filter(postPageableOutputDto);
+        return postPageableOutputDto;
+    }
+    @Override
+    public PostPageableOutputDto readAllByTagsNameAndTitleContainingOrderByCreatedAtDesc(String tagName, String title, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAllByTagsNameAndTitleContainingOrderByCreatedAtDesc(tagName, title, pageable);
+        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
+        outputDtoResponseUtil.filter(postPageableOutputDto);
+        return postPageableOutputDto;
+    }
+    @Override
+    public it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto readAllByUserIdOrderByCreatedAtDesc(Long userId, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageable);
+        it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto postPageableOutputDto = new it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto();
+        postPageableOutputDto.setPosts(posts.getContent()
+            .stream()
+            .map(post -> modelMapper.map(post,
+                it.itj.academy.blogbe.dto.output.user.PostOutputDto.class))
+            .toList());
+        return postPageableOutputDto;
+    }
+    @Override
+    public it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto readAllByUserUsernameOrderByCreatedAtDesc(String username, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAllByUserUsernameOrderByCreatedAtDesc(username, pageable);
+        it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto postPageableOutputDto = new it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto();
+        postPageableOutputDto.setPosts(posts.getContent()
+            .stream()
+            .map(post -> modelMapper.map(post,
+                it.itj.academy.blogbe.dto.output.user.PostOutputDto.class))
+            .toList());
+        return postPageableOutputDto;
+    }
+    @Override
+    public PostPageableOutputDto readAllByUserUsernameAndTitleContainingOrderByCreatedAtDesc(String username, String title, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAllByUserUsernameAndTitleContainingOrderByCreatedAtDesc(username, title, pageable);
+        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
+        outputDtoResponseUtil.filter(postPageableOutputDto);
+        return postPageableOutputDto;
+    }
+    @Override
+    public PostPageableOutputDto readAllByValidOrderByCreatedAtDesc(Boolean valid, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAllByValidOrderByCreatedAtDesc(valid, pageable);
+        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
+        outputDtoResponseUtil.filter(postPageableOutputDto);
+        return postPageableOutputDto;
+    }
+    @Override
+    public PostOutputDto readById(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Post with id %d not found", id)));
+        return modelMapper.map(post, PostOutputDto.class);
     }
     @Override
     public PostOutputDto readByTitle(String title) {
         Post post = postRepository.findByTitle(title)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Post with title %s not found", title)));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Post with title %s not found", title)));
         return modelMapper.map(post, PostOutputDto.class);
-    }
-    @Override
-    public PostPageableOutputDto readByTitleContaining(String title, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findByTitleContaining(title, pageable);
-        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
-        outputDtoResponseUtil.filter(postPageableOutputDto);
-        return postPageableOutputDto;
-    }
-    @Override
-    public PostPageableOutputDto readByCategoryId(Long categoryId, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findByCategoryId(categoryId, pageable);
-        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
-        outputDtoResponseUtil.filter(postPageableOutputDto);
-        return postPageableOutputDto;
-    }
-    @Override
-    public PostPageableOutputDto readByCategoryName(String categoryName, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findByCategoryName(categoryName, pageable);
-        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
-        outputDtoResponseUtil.filter(postPageableOutputDto);
-        return postPageableOutputDto;
-    }
-    @Override
-    public PostPageableOutputDto readByTagId(Long tagId, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findByTagsId(tagId, pageable);
-        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
-        outputDtoResponseUtil.filter(postPageableOutputDto);
-        return postPageableOutputDto;
-    }
-    @Override
-    public PostPageableOutputDto readByTagName(String tagName, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findByTagsName(tagName, pageable);
-        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
-        outputDtoResponseUtil.filter(postPageableOutputDto);
-        return postPageableOutputDto;
-    }
-    @Override
-    public PostPageableOutputDto readByUserId(Long userId, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findByUserId(userId, pageable);
-        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
-        outputDtoResponseUtil.filter(postPageableOutputDto);
-        return postPageableOutputDto;
-    }
-    @Override
-    public PostPageableOutputDto readByUserUsername(String username, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findByUserUsername(username, pageable);
-        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
-        outputDtoResponseUtil.filter(postPageableOutputDto);
-        return postPageableOutputDto;
-    }
-    @Override
-    public PostPageableOutputDto readByValidIsFalse(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findByValidIsFalse(pageable);
-        PostPageableOutputDto postPageableOutputDto = pageableUtil.postPageableOutputDto(posts);
-        outputDtoResponseUtil.filter(postPageableOutputDto);
-        return postPageableOutputDto;
     }
     @Override
     public PostOutputDto update(Long id, PostInputDto postInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
@@ -177,6 +225,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Post with id %d not found", id)));
         post.setValid(valid);
+        postRepository.save(post);
     }
     @Override
     public void delete(Long id) {

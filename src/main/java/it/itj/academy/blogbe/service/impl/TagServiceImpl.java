@@ -57,6 +57,14 @@ public class TagServiceImpl implements TagService {
         return tagPageableOutputDto;
     }
     @Override
+    public TagPageableOutputDto readAllByOrderByName(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Tag> tags = tagRepository.findAllByOrderByName(pageable);
+        TagPageableOutputDto tagPageableOutputDto = pageableUtil.tagPageableOutputDto(tags);
+        outputDtoResponseUtil.filter(tagPageableOutputDto.getTags());
+        return tagPageableOutputDto;
+    }
+    @Override
     public TagOutputDto readById(Long id) {
         Tag tag = tagRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Tag with id (%d) not found", id)));
@@ -69,20 +77,20 @@ public class TagServiceImpl implements TagService {
         return modelMapper.map(tag, TagOutputDto.class);
     }
     @Override
-    public TagPageableOutputDto readByNameContains(String name, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public TagPageableOutputDto readAllByNameContainsOrderByName(String name, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Tag> tags = tagRepository.findByNameContains(name, pageable);
+        Page<Tag> tags = tagRepository.findAllByNameContainsOrderByName(name, pageable);
         TagPageableOutputDto tagPageableOutputDto = pageableUtil.tagPageableOutputDto(tags);
         outputDtoResponseUtil.filter(tagPageableOutputDto.getTags());
         return tagPageableOutputDto;
     }
     @Override
-    public TagPageableOutputDto readByCategoryName(String categoryName, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public TagPageableOutputDto readAllByCategoryNameOrderByName(String categoryName, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         if (!categoryRepository.existsByName(categoryName)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Category with name (%s) not found", categoryName));
         }
         Pageable pageable = PageRequest.of(page, size);
-        Page<Tag> tags = tagRepository.findByCategoriesName(categoryName, pageable);
+        Page<Tag> tags = tagRepository.findAllByCategoriesNameOrderByName(categoryName, pageable);
         TagPageableOutputDto tagPageableOutputDto = pageableUtil.tagPageableOutputDto(tags);
         outputDtoResponseUtil.filter(tagPageableOutputDto.getTags());
         tagPageableOutputDto.getTags().forEach(tagOutputDto -> tagOutputDto.setCategories(null));

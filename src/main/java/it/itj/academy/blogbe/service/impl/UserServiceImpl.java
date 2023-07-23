@@ -104,6 +104,18 @@ public class UserServiceImpl implements UserService {
         return pageableUtil.userPageableOutputDto(users);
     }
     @Override
+    public UserPageableOutputDto readAllByOrderByUsername(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userRepository.findAllByOrderByUsername(pageable);
+        return pageableUtil.userPageableOutputDto(users);
+    }
+    @Override
+    public UserPageableOutputDto readAllByUsernameContainingOrderByUsername(String username, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> users = userRepository.findAllByUsernameContainingOrderByUsername(username, pageable);
+        return pageableUtil.userPageableOutputDto(users);
+    }
+    @Override
     public UserOutputDto readById(Long id) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d not found", id)));
@@ -144,12 +156,38 @@ public class UserServiceImpl implements UserService {
         }
         user.setFirstName(userInputDto.getFirstName());
         user.setLastName(userInputDto.getLastName());
-        user.setBirthdate(userInputDto.getBirthdate());
         user.setEmail(userInputDto.getEmail());
         user.setUsername(userInputDto.getUsername());
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setAvatar(userInputDto.getAvatar());
         return modelMapper.map(userRepository.save(user), UserOutputDto.class);
+    }
+    @Override
+    public UserOutputDto updatePassword(Long id, UserInputDto userInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d not found", id)));
+        if (user.isDeleted()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d has been deleted", id));
+        }
+        Map<String, String> errors = validatorUtil.validate(userInputDto);
+        if (!errors.isEmpty()) {
+            throw new CustomInvalidFieldException(errors);
+        }
+        user.setPassword(bCryptPasswordEncoder.encode(userInputDto.getPassword()));
+        return modelMapper.map(userRepository.save(user), UserOutputDto.class);
+    }
+    @Override
+    public void blockOrUnblock(Long id) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d not found", id)));
+        if (user.isDeleted()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d has been deleted", id));
+        }
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!currentUser.getRole().getAuthority().equals("ROLE_MODERATOR")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not authorized to perform this action");
+        }
+        user.setBlocked(!user.isBlocked());
+        userRepository.save(user);
     }
     @Override
     public void delete(Long id) {
@@ -157,6 +195,10 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d not found", id)));
         if (user.isDeleted()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d has been deleted already", id));
+        }
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (currentUser.getRole().getAuthority().equals("ROLE_USER") && !currentUser.getId().equals(id)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not authorized to perform this action");
         }
         user.setDeleted(true);
         userRepository.save(user);

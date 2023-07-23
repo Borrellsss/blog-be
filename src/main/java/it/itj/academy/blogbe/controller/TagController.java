@@ -32,6 +32,10 @@ public class TagController {
     public ResponseEntity<TagPageableOutputDto> readAll(@RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         return new ResponseEntity<>(tagService.readAll(page, pageable.getPageSize()), HttpStatus.OK);
     }
+    @GetMapping(value = "/order-by-name")
+    public ResponseEntity<TagPageableOutputDto> readAllByOrderByName(@RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        return new ResponseEntity<>(tagService.readAllByOrderByName(page, pageable.getPageSize()), HttpStatus.OK);
+    }
     @GetMapping(value = "/{id}")
     public ResponseEntity<TagOutputDto> readById(@PathVariable Long id) {
         return new ResponseEntity<>(tagService.readById(id), HttpStatus.OK);
@@ -41,12 +45,12 @@ public class TagController {
         return new ResponseEntity<>(tagService.readByName(name), HttpStatus.OK);
     }
     @GetMapping(value = "/like")
-    public ResponseEntity<TagPageableOutputDto> readByNameContains(@RequestParam String name, @RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        return new ResponseEntity<>(tagService.readByNameContains(name, page, pageable.getPageSize()), HttpStatus.OK);
+    public ResponseEntity<TagPageableOutputDto> readAllByNameContainsOrderByName(@RequestParam String name, @RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        return new ResponseEntity<>(tagService.readAllByNameContainsOrderByName(name, page, pageable.getPageSize()), HttpStatus.OK);
     }
     @GetMapping(value = "/category/{categoryName}")
-    public ResponseEntity<TagPageableOutputDto> readByCategoryName(@PathVariable String categoryName, @RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
-        return new ResponseEntity<>(tagService.readByCategoryName(categoryName, page, pageable.getPageSize()), HttpStatus.OK);
+    public ResponseEntity<TagPageableOutputDto> readAllByCategoryNameOrderByName(@PathVariable String categoryName, @RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        return new ResponseEntity<>(tagService.readAllByCategoryNameOrderByName(categoryName, page, pageable.getPageSize()), HttpStatus.OK);
     }
     // UPDATE
     @PutMapping(value = "/{id}")

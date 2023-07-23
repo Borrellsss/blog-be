@@ -28,9 +28,13 @@ public class CommentController {
         return new ResponseEntity<>(commentService.create(commentInputDto), HttpStatus.CREATED);
     }
     // SELECT
+    @GetMapping(value = "user/{userId}")
+    public ResponseEntity<CommentPageableOutputDto> readAllByUserIdOrderByCreatedAtDesc(@PathVariable Long userId, @RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) {
+        return new ResponseEntity<>(commentService.readAllByUserIdOrderByCreatedAtDesc(userId, page, pageable.getPageSize()), HttpStatus.OK);
+    }
     @GetMapping(value = "post/{postId}")
-    public ResponseEntity<CommentPageableOutputDto> readByPostIdOrderByCreatedAtDesc(@PathVariable Long postId, @RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) {
-        return new ResponseEntity<>(commentService.readByPostIdOrderByCreatedAtDesc(postId, page, pageable.getPageSize()), HttpStatus.OK);
+    public ResponseEntity<CommentPageableOutputDto> readAllByPostIdOrderByCreatedAtDesc(@PathVariable Long postId, @RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) {
+        return new ResponseEntity<>(commentService.readAllByPostIdOrderByCreatedAtDesc(postId, page, pageable.getPageSize()), HttpStatus.OK);
     }
     // UPDATE
     @PutMapping(value = "/{id}")

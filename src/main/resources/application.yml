@@ -12,6 +12,31 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+#  TODO: REMOVE AFTER DEPLOY
+#  TESTING
+  mail:
+    host: "sandbox.smtp.mailtrap.io"
+    port: 25
+    username: "b9fe37ebcb1b58"
+    password: "0790e2174a00d3"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+#  DEVELOPMENT
+#  mail:
+#    host: "smtp.gmail.com"
+#    port: 587
+#    username: "edoardofilippo.borrello@gmail.com"
+#    password: "mkfjqizkqszumlbt"
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
 server:
   port: 8080
   servlet:
@@ -21,7 +46,7 @@ server:
 security:
   issuer: "https://www.pitech-blog.com/"
   secret: "Dsed#CLhQ@%FC7Kt58pjhZVgwa^^xr*f0HdpCkdAEC3^yEtwS@u*ox8@4FN!"
-  expiration: 3600000
+  expiration: 7200000
   prefix: "Bearer "
 springdoc:
   swagger-ui:

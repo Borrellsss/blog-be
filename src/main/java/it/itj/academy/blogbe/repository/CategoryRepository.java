@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     Optional<Category> findByName(String name);
-    Page<Category> findByNameContains(String name, Pageable pageable);
+    Page<Category> findAllByOrderByName(Pageable pageable);
+    Page<Category> findAllByNameContainsOrderByName(String name, Pageable pageable);
     boolean existsByName(String name);
 }

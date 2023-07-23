@@ -10,8 +10,9 @@ import java.util.Optional;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
     Optional<Tag> findByName(String name);
-    Page<Tag> findByNameContains(String name, Pageable pageable);
-    List<Tag> findByCategoriesId(Long categoryId);
-    Page<Tag> findByCategoriesName(String categoryName, Pageable pageable);
+    Page<Tag> findAllByOrderByName(Pageable pageable);
+    Page<Tag> findAllByNameContainsOrderByName(String name, Pageable pageable);
+    List<Tag> findAllByCategoriesIdOrderByName(Long categoryId);
+    Page<Tag> findAllByCategoriesNameOrderByName(String categoryName, Pageable pageable);
     boolean existsByName(String name);
 }

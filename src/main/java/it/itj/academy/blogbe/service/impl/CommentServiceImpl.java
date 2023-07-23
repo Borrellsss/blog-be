@@ -12,6 +12,7 @@ import it.itj.academy.blogbe.repository.UserRepository;
 import it.itj.academy.blogbe.service.CommentService;
 import it.itj.academy.blogbe.util.PageableUtil;
 import it.itj.academy.blogbe.util.ValidatorUtil;
+import it.itj.academy.blogbe.util.email.EmailUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,7 @@ public class CommentServiceImpl implements CommentService {
     private final ModelMapper modelMapper;
     private final ValidatorUtil validatorUtil;
     private final PageableUtil pageableUtil;
+    private final EmailUtil<Comment> commentEmailUtil;
 
     @Override
     public CommentOutputDto create(CommentInputDto commentInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
@@ -58,13 +60,29 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = modelMapper.map(commentInputDto, Comment.class);
         comment.setUser(userRepository.findById(commentInputDto.getUser()).get());
         comment.setPost(postRepository.findById(commentInputDto.getPost()).get());
-        return modelMapper.map(commentRepository.save(comment), CommentOutputDto.class);
+        CommentOutputDto commentOutputDto = modelMapper.map(commentRepository.save(comment), CommentOutputDto.class);
+        try {
+            commentEmailUtil.sendEmail(comment.getPost().getUser().getEmail(), comment);
+        } catch (Exception e) {
+            log.error("Error sending email: " + e.getMessage());
+        }
+        return commentOutputDto;
     }
     @Override
-    public CommentPageableOutputDto readByPostIdOrderByCreatedAtDesc(Long postId, int page, int size) {
+    public CommentPageableOutputDto readAllByUserIdOrderByCreatedAtDesc(Long userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Comment> comments = commentRepository.findByPostId(postId, pageable);
+        Page<Comment> comments = commentRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageable);
         return pageableUtil.commentPageableOutputDto(comments);
+    }
+    @Override
+    public CommentPageableOutputDto readAllByPostIdOrderByCreatedAtDesc(Long postId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comment> comments = commentRepository.findAllByPostIdOrderByCreatedAtDesc(postId, pageable);
+        return pageableUtil.commentPageableOutputDto(comments);
+    }
+    @Override
+    public Long countCommentByPostId(Long postId) {
+        return commentRepository.countCommentByPostId(postId);
     }
     @Override
     public CommentOutputDto update(Long id, CommentInputDto commentInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {

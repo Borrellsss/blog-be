@@ -15,8 +15,12 @@ public interface UserService {
     SignUpOutputDto signUp(SignUpInputDto signUpInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
     SignInOutputDto signIn(SignInInputDto signInInputDto) throws JsonProcessingException, InvocationTargetException, NoSuchMethodException, IllegalAccessException;
     UserPageableOutputDto readAll(int page, int size);
+    UserPageableOutputDto readAllByOrderByUsername(int page, int size);
+    UserPageableOutputDto readAllByUsernameContainingOrderByUsername(String username, int page, int size);
     UserOutputDto readById(Long id) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
     UserOutputDto readByUsername(String username) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
     UserOutputDto update(Long id, UserInputDto userInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+    UserOutputDto updatePassword(Long id, UserInputDto userInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+    void blockOrUnblock(Long id);
     void delete(Long id);
 }

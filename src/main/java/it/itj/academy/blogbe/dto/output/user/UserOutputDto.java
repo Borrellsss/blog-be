@@ -15,7 +15,7 @@ public class UserOutputDto {
     private Long id;
     private String firstName;
     private String lastName;
-    private LocalDate birthDate;
+    private LocalDate birthdate;
     private String email;
     private String username;
     private String avatar;

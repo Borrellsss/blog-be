@@ -29,7 +29,7 @@ public class Post {
     private String title;
     @Column(nullable = false, unique = true, columnDefinition = "LONGTEXT")
     private String content;
-    private Boolean valid = false;
+    private Boolean valid;
     @Column(name = "verified_by")
     private Long verifiedBy;
     @Column(name = "verified_at")

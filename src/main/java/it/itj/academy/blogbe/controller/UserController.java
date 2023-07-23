@@ -38,8 +38,12 @@ public class UserController {
     }
     // SELECT
     @GetMapping
-    public ResponseEntity<UserPageableOutputDto> readAll(@RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) {
-        return new ResponseEntity<>(userService.readAll(page, pageable.getPageSize()), HttpStatus.OK);
+    public ResponseEntity<UserPageableOutputDto> readAllByOrderByUsername(@RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) {
+        return new ResponseEntity<>(userService.readAllByOrderByUsername(page, pageable.getPageSize()), HttpStatus.OK);
+    }
+    @GetMapping(value = "/username-contains")
+    public ResponseEntity<UserPageableOutputDto> readAllByUsernameContainingOrderByUsername(@RequestParam String value, @RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) {
+        return new ResponseEntity<>(userService.readAllByUsernameContainingOrderByUsername(value, page, pageable.getPageSize()), HttpStatus.OK);
     }
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserOutputDto> readById(@PathVariable Long id) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
@@ -53,6 +57,15 @@ public class UserController {
     @PutMapping(value = "/{id}")
     public ResponseEntity<UserOutputDto> update(@PathVariable Long id, @RequestBody UserInputDto userInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         return new ResponseEntity<>(userService.update(id, userInputDto), HttpStatus.OK);
+    }
+    @PutMapping(value = "/{id}/password")
+    public ResponseEntity<UserOutputDto> updatePassword(@PathVariable Long id, @RequestBody UserInputDto userInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        return new ResponseEntity<>(userService.updatePassword(id, userInputDto), HttpStatus.OK);
+    }
+    @PutMapping(value = "/{id}/block-or-unblock")
+    public ResponseEntity<Void> blockOrUnblock(@PathVariable Long id) {
+        userService.blockOrUnblock(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     // DELETE
     @DeleteMapping(value = "/{id}")
