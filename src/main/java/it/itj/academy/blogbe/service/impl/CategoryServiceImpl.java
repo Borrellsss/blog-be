@@ -7,7 +7,6 @@ import it.itj.academy.blogbe.entity.Category;
 import it.itj.academy.blogbe.exception.CustomInvalidFieldException;
 import it.itj.academy.blogbe.repository.CategoryRepository;
 import it.itj.academy.blogbe.service.CategoryService;
-import it.itj.academy.blogbe.util.OutputDtoResponseUtil;
 import it.itj.academy.blogbe.util.PageableUtil;
 import it.itj.academy.blogbe.util.ValidatorUtil;
 import jakarta.transaction.Transactional;
@@ -31,7 +30,6 @@ import java.util.Map;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
-    private final OutputDtoResponseUtil outputDtoResponseUtil;
     private final ValidatorUtil validatorUtil;
     private final PageableUtil pageableUtil;
 
@@ -50,17 +48,13 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryPageableOutputDto readAll(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Pageable pageable = PageRequest.of(page, size);
         Page<Category> categories = categoryRepository.findAll(pageable);
-        CategoryPageableOutputDto categoryPageableOutputDto = pageableUtil.categoryPageableOutputDto(categories);
-        outputDtoResponseUtil.filter(categoryPageableOutputDto.getCategories());
-        return categoryPageableOutputDto;
+        return pageableUtil.categoryPageableOutputDto(categories);
     }
     @Override
     public CategoryPageableOutputDto readAllOrderByName(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Pageable pageable = PageRequest.of(page, size);
         Page<Category> categories = categoryRepository.findAllByOrderByName(pageable);
-        CategoryPageableOutputDto categoryPageableOutputDto = pageableUtil.categoryPageableOutputDto(categories);
-        outputDtoResponseUtil.filter(categoryPageableOutputDto.getCategories());
-        return categoryPageableOutputDto;
+        return pageableUtil.categoryPageableOutputDto(categories);
     }
     @Override
     public CategoryOutputDto readById(Long id) {
@@ -75,12 +69,10 @@ public class CategoryServiceImpl implements CategoryService {
         return modelMapper.map(category, CategoryOutputDto.class);
     }
     @Override
-    public CategoryPageableOutputDto readAllByNameContainsOrderByName(String name, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public CategoryPageableOutputDto readAllByNameContainingOrderByName(String name, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Category> categories = categoryRepository.findAllByNameContainsOrderByName(name, pageable);
-        CategoryPageableOutputDto categoryPageableOutputDto = pageableUtil.categoryPageableOutputDto(categories);
-        outputDtoResponseUtil.filter(categoryPageableOutputDto.getCategories());
-        return categoryPageableOutputDto;
+        Page<Category> categories = categoryRepository.findAllByNameContainingOrderByName(name, pageable);
+        return pageableUtil.categoryPageableOutputDto(categories);
     }
     @Override
     public CategoryOutputDto update(Long id, CategoryInputDto categoryInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {

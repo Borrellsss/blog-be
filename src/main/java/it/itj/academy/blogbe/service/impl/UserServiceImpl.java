@@ -15,9 +15,11 @@ import it.itj.academy.blogbe.repository.RoleRepository;
 import it.itj.academy.blogbe.repository.UserRepository;
 import it.itj.academy.blogbe.service.UserService;
 import it.itj.academy.blogbe.util.JWTUtil;
-import it.itj.academy.blogbe.util.OutputDtoResponseUtil;
 import it.itj.academy.blogbe.util.PageableUtil;
 import it.itj.academy.blogbe.util.ValidatorUtil;
+import it.itj.academy.blogbe.util.email.user.UserBlockedOrUnblockedEmailUtil;
+import it.itj.academy.blogbe.util.email.user.UserDeletedEmailUtil;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,9 +47,10 @@ public class UserServiceImpl implements UserService {
     private final ObjectMapper objectMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JWTUtil jwtUtil;
-    private final OutputDtoResponseUtil outputDtoResponseUtil;
     private final ValidatorUtil validatorUtil;
     private final PageableUtil pageableUtil;
+    private final UserBlockedOrUnblockedEmailUtil userBlockedOrUnblockedEmailUtil;
+    private final UserDeletedEmailUtil userDeletedEmailUtil;
 
     @Override
     public SignUpOutputDto signUp(SignUpInputDto signUpInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
@@ -104,15 +107,15 @@ public class UserServiceImpl implements UserService {
         return pageableUtil.userPageableOutputDto(users);
     }
     @Override
-    public UserPageableOutputDto readAllByOrderByUsername(int page, int size) {
+    public UserPageableOutputDto readAllByDeletedIsFalseOrderByUsername(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<User> users = userRepository.findAllByOrderByUsername(pageable);
+        Page<User> users = userRepository.findAllByDeletedIsFalseOrderByUsername(pageable);
         return pageableUtil.userPageableOutputDto(users);
     }
     @Override
-    public UserPageableOutputDto readAllByUsernameContainingOrderByUsername(String username, int page, int size) {
+    public UserPageableOutputDto readAllByUsernameContainingAndDeletedIsFalseOrderByUsername(String username, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<User> users = userRepository.findAllByUsernameContainingOrderByUsername(username, pageable);
+        Page<User> users = userRepository.findAllByUsernameContainingAndDeletedIsFalseOrderByUsername(username, pageable);
         return pageableUtil.userPageableOutputDto(users);
     }
     @Override
@@ -122,9 +125,7 @@ public class UserServiceImpl implements UserService {
         if (user.isDeleted()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d has been deleted", id));
         }
-        UserOutputDto userOutputDto = modelMapper.map(user, UserOutputDto.class);
-        outputDtoResponseUtil.filter(userOutputDto);
-        return userOutputDto;
+        return modelMapper.map(user, UserOutputDto.class);
     }
     @Override
     public UserOutputDto readByUsername(String username) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
@@ -133,9 +134,7 @@ public class UserServiceImpl implements UserService {
         if (user.isDeleted()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with username %s has been deleted", username));
         }
-        UserOutputDto userOutputDto = modelMapper.map(user, UserOutputDto.class);
-        outputDtoResponseUtil.filter(userOutputDto);
-        return userOutputDto;
+        return modelMapper.map(user, UserOutputDto.class);
     }
     @Override
     public UserOutputDto update(Long id, UserInputDto userInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
@@ -176,7 +175,7 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(userRepository.save(user), UserOutputDto.class);
     }
     @Override
-    public void blockOrUnblock(Long id) {
+    public void blockOrUnblock(Long id) throws MessagingException {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d not found", id)));
         if (user.isDeleted()) {
@@ -187,10 +186,11 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not authorized to perform this action");
         }
         user.setBlocked(!user.isBlocked());
+        userBlockedOrUnblockedEmailUtil.sendEmail(user.getEmail(), user);
         userRepository.save(user);
     }
     @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws MessagingException {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d not found", id)));
         if (user.isDeleted()) {
@@ -201,6 +201,8 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not authorized to perform this action");
         }
         user.setDeleted(true);
+        user.setNotifications(false);
+        userDeletedEmailUtil.sendEmail(user.getEmail(), user);
         userRepository.save(user);
     }
 }

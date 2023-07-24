@@ -41,6 +41,8 @@ public class User {
     private String password;
     private String avatar;
     @Column(nullable = false)
+    private boolean notifications;
+    @Column(nullable = false)
     private boolean blocked = false;
     @Column(nullable = false)
     private boolean deleted = false;
@@ -67,16 +69,17 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Comment> comments = new ArrayList<>();
 
-    public User(String firstName, String lastName, LocalDate birthdate, String email, String username, String password, Role role) {
+    public User(String firstName, String lastName, LocalDate birthdate, String email, String username, String password, boolean notifications, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthdate = birthdate;
         this.email = email;
         this.username = username;
         this.password = password;
+        this.notifications = notifications;
         this.role = role;
     }
-    public User(String firstName, String lastName, LocalDate birthdate, String email, String username, String password, String avatar, Role role) {
+    public User(String firstName, String lastName, LocalDate birthdate, String email, String username, String password, String avatar, boolean notifications, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthdate = birthdate;
@@ -84,6 +87,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.avatar = avatar;
+        this.notifications = notifications;
         this.role = role;
     }
 }

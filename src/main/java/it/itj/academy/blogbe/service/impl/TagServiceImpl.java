@@ -8,7 +8,6 @@ import it.itj.academy.blogbe.exception.CustomInvalidFieldException;
 import it.itj.academy.blogbe.repository.CategoryRepository;
 import it.itj.academy.blogbe.repository.TagRepository;
 import it.itj.academy.blogbe.service.TagService;
-import it.itj.academy.blogbe.util.OutputDtoResponseUtil;
 import it.itj.academy.blogbe.util.PageableUtil;
 import it.itj.academy.blogbe.util.ValidatorUtil;
 import jakarta.transaction.Transactional;
@@ -33,7 +32,6 @@ public class TagServiceImpl implements TagService {
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
-    private final OutputDtoResponseUtil outputDtoResponseUtil;
     private final ValidatorUtil validatorUtil;
     private final PageableUtil pageableUtil;
 
@@ -52,17 +50,13 @@ public class TagServiceImpl implements TagService {
     public TagPageableOutputDto readAll(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Pageable pageable = PageRequest.of(page, size);
         Page<Tag> tags = tagRepository.findAll(pageable);
-        TagPageableOutputDto tagPageableOutputDto = pageableUtil.tagPageableOutputDto(tags);
-        outputDtoResponseUtil.filter(tagPageableOutputDto.getTags());
-        return tagPageableOutputDto;
+        return pageableUtil.tagPageableOutputDto(tags);
     }
     @Override
     public TagPageableOutputDto readAllByOrderByName(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Pageable pageable = PageRequest.of(page, size);
         Page<Tag> tags = tagRepository.findAllByOrderByName(pageable);
-        TagPageableOutputDto tagPageableOutputDto = pageableUtil.tagPageableOutputDto(tags);
-        outputDtoResponseUtil.filter(tagPageableOutputDto.getTags());
-        return tagPageableOutputDto;
+        return pageableUtil.tagPageableOutputDto(tags);
     }
     @Override
     public TagOutputDto readById(Long id) {
@@ -77,12 +71,10 @@ public class TagServiceImpl implements TagService {
         return modelMapper.map(tag, TagOutputDto.class);
     }
     @Override
-    public TagPageableOutputDto readAllByNameContainsOrderByName(String name, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public TagPageableOutputDto readAllByNameContainingOrderByName(String name, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Tag> tags = tagRepository.findAllByNameContainsOrderByName(name, pageable);
-        TagPageableOutputDto tagPageableOutputDto = pageableUtil.tagPageableOutputDto(tags);
-        outputDtoResponseUtil.filter(tagPageableOutputDto.getTags());
-        return tagPageableOutputDto;
+        Page<Tag> tags = tagRepository.findAllByNameContainingOrderByName(name, pageable);
+        return pageableUtil.tagPageableOutputDto(tags);
     }
     @Override
     public TagPageableOutputDto readAllByCategoryNameOrderByName(String categoryName, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
@@ -91,10 +83,7 @@ public class TagServiceImpl implements TagService {
         }
         Pageable pageable = PageRequest.of(page, size);
         Page<Tag> tags = tagRepository.findAllByCategoriesNameOrderByName(categoryName, pageable);
-        TagPageableOutputDto tagPageableOutputDto = pageableUtil.tagPageableOutputDto(tags);
-        outputDtoResponseUtil.filter(tagPageableOutputDto.getTags());
-        tagPageableOutputDto.getTags().forEach(tagOutputDto -> tagOutputDto.setCategories(null));
-        return tagPageableOutputDto;
+        return pageableUtil.tagPageableOutputDto(tags);
     }
     @Override
     public TagOutputDto update(Long id, TagInputDto tagInputDto) {

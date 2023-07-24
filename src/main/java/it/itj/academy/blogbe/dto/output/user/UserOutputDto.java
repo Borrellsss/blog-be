@@ -19,6 +19,7 @@ public class UserOutputDto {
     private String email;
     private String username;
     private String avatar;
+    private boolean notifications;
     private Boolean blocked = false;
     private Boolean deleted = false;
     private Long createdBy;

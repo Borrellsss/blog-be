@@ -30,7 +30,6 @@ public class PageableUtil {
         if (users.hasContent()) {
             UserPageableOutputDto userPageableOutputDto = new UserPageableOutputDto();
             userPageableOutputDto.setUsers(users.stream()
-                .filter(user -> !user.isDeleted())
                 .map(user -> modelMapper.map(user, UserOutputDto.class))
                 .toList());
             userPageableOutputDto.setTotalPages(users.getTotalPages());

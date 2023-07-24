@@ -1,6 +1,7 @@
-package it.itj.academy.blogbe.util.email;
+package it.itj.academy.blogbe.util.email.comment;
 
 import it.itj.academy.blogbe.entity.Comment;
+import it.itj.academy.blogbe.util.email.EmailUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -17,26 +18,27 @@ public class CommentEmailUtil implements EmailUtil<Comment> {
     @Override
     public void sendEmail(String to, Comment comment) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        message.setFrom("pietch.blog@mail.test");
+        message.setFrom("no-reply@pietch.blog.com");
         message.setSubject(String.format("%s has commented on your post", comment.getUser().getUsername()));
         message.setRecipients(MimeMessage.RecipientType.TO, comment.getPost().getUser().getEmail());
         message.setContent(setMail(comment), "text/html; charset=utf-8");
         mailSender.send(message);
     }
-    private String setMail(Comment comment){
+    @Override
+    public String setMail(Comment comment){
         return String.format(
             """
-            <html>
-                <body>
-                    <h1>Hi, %s.</h1>
-                    <div>
-                        <span>%s</span>
-                        has commented on your post: %s
-                    </div>
-                    <a href="http://localhost:4200/posts/details/%s/%s/%s">Click here to see the comment</a>
-                    <p>Thanks, Pitech Blog</p>
-                </body>
-            </html>
+                <html>
+                    <body>
+                        <h1>Hi, %s.</h1>
+                        <div>
+                            <span>%s</span>
+                            has commented on your post: %s
+                        </div>
+                        <a href="http://localhost:4200/posts/details/%s/%s/%s">Click here to see the comment</a>
+                        <p>Thanks, Pitech Blog</p>
+                    </body>
+                </html>
             """,
             comment.getPost().getUser().getUsername(),
             comment.getUser().getUsername(),

@@ -29,6 +29,8 @@ public class Tag {
     private Long id;
     @Column(length = 50, nullable = false, unique = true)
     private String name;
+    @Column(nullable = false, unique = true, columnDefinition = "TEXT")
+    private String description;
     @Column(name = "created_by")
     @CreatedBy
     private Long createdBy;
@@ -52,8 +54,9 @@ public class Tag {
     )
     private List<Category> categories;
 
-    public Tag(String name, List<Category> categories) {
+    public Tag(String name, String description, List<Category> categories) {
         this.name = name;
+        this.description = description;
         this.categories = categories;
     }
 }

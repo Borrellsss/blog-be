@@ -17,5 +17,6 @@ public class UserInputDto {
     private String username;
     private String password;
     private String avatar;
+    private boolean notifications;
     private Long role;
 }

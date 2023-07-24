@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class TagOutputDto {
     private Long id;
     private String name;
+    private String description;
     private Long createdBy;
     private Long updatedBy;
     private LocalDate createdAt;

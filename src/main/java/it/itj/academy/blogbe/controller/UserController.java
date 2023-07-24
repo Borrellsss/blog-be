@@ -9,6 +9,7 @@ import it.itj.academy.blogbe.dto.output.user.SignUpOutputDto;
 import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
 import it.itj.academy.blogbe.dto.output.user.UserPageableOutputDto;
 import it.itj.academy.blogbe.service.UserService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 @RequestMapping(value = "/users")
 public class UserController {
     private final UserService userService;
-    private final int PAGE_SIZE = 20;
+    private final int PAGE_SIZE = 30;
 
     // INSERT
     @PostMapping(value = "/sign-up")
@@ -38,12 +39,12 @@ public class UserController {
     }
     // SELECT
     @GetMapping
-    public ResponseEntity<UserPageableOutputDto> readAllByOrderByUsername(@RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) {
-        return new ResponseEntity<>(userService.readAllByOrderByUsername(page, pageable.getPageSize()), HttpStatus.OK);
+    public ResponseEntity<UserPageableOutputDto> readAllByDeletedIsFalseOrderByUsername(@RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) {
+        return new ResponseEntity<>(userService.readAllByDeletedIsFalseOrderByUsername(page, pageable.getPageSize()), HttpStatus.OK);
     }
     @GetMapping(value = "/username-contains")
-    public ResponseEntity<UserPageableOutputDto> readAllByUsernameContainingOrderByUsername(@RequestParam String value, @RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) {
-        return new ResponseEntity<>(userService.readAllByUsernameContainingOrderByUsername(value, page, pageable.getPageSize()), HttpStatus.OK);
+    public ResponseEntity<UserPageableOutputDto> readAllByUsernameContainingAndDeletedIsFalseOrderByUsername(@RequestParam String value, @RequestParam int page, @PageableDefault(size = PAGE_SIZE) Pageable pageable) {
+        return new ResponseEntity<>(userService.readAllByUsernameContainingAndDeletedIsFalseOrderByUsername(value, page, pageable.getPageSize()), HttpStatus.OK);
     }
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserOutputDto> readById(@PathVariable Long id) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
@@ -63,13 +64,13 @@ public class UserController {
         return new ResponseEntity<>(userService.updatePassword(id, userInputDto), HttpStatus.OK);
     }
     @PutMapping(value = "/{id}/block-or-unblock")
-    public ResponseEntity<Void> blockOrUnblock(@PathVariable Long id) {
+    public ResponseEntity<Void> blockOrUnblock(@PathVariable Long id) throws MessagingException {
         userService.blockOrUnblock(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     // DELETE
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) throws MessagingException {
         userService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

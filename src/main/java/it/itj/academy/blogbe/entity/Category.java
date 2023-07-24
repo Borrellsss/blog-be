@@ -29,6 +29,8 @@ public class Category {
     private Long id;
     @Column(length = 150, nullable = false, unique = true)
     private String name;
+    @Column(nullable = false, unique = true, columnDefinition = "TEXT")
+    private String description;
     @Column(name = "created_by")
     @CreatedBy
     private Long createdBy;
@@ -47,7 +49,8 @@ public class Category {
     @ManyToMany(mappedBy = "categories")
     private List<Tag> tags = new ArrayList<>();
 
-    public Category(String name) {
+    public Category(String name, String description) {
         this.name = name;
+        this.description = description;
     }
 }
