@@ -14,29 +14,29 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 #  TODO: REMOVE AFTER DEPLOY
 #  TESTING
-  mail:
-    host: "sandbox.smtp.mailtrap.io"
-    port: 25
-    username: "b9fe37ebcb1b58"
-    password: "0790e2174a00d3"
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-#  DEVELOPMENT
 #  mail:
-#    host: "smtp.gmail.com"
-#    port: 587
-#    username: "edoardofilippo.borrello@gmail.com"
-#    password: "mkfjqizkqszumlbt"
+#    host: "sandbox.smtp.mailtrap.io"
+#    port: 25
+#    username: "b9fe37ebcb1b58"
+#    password: "0790e2174a00d3"
 #    properties:
 #      mail:
 #        smtp:
 #          auth: true
 #          starttls:
 #            enable: true
+#  DEVELOPMENT
+  mail:
+    host: "smtp.gmail.com"
+    port: 587
+    username: "edoardofilippo.borrello@gmail.com"
+    password: "mkfjqizkqszumlbt"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 server:
   port: 8080
   servlet:

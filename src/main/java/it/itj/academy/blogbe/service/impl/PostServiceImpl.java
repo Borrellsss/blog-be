@@ -94,19 +94,19 @@ public class PostServiceImpl implements PostService {
         return modelMapper.map(postRepository.save(post), PostOutputDto.class);
     }
     @Override
-    public PostPageableOutputDto readAllByValidIsTrueOrderByCommentsDesc(int page, int size) {
+    public PostPageableOutputDto readAllByValidIsTrueAndUserDeletedIsFalseOrderByCommentsDesc(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAllByValidIsTrueOrderByCommentsDesc(pageable);
+        Page<Post> posts = postRepository.findAllByValidIsTrueAndUserDeletedIsFalseOrderByCommentsDesc(pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByVotesIsTrueAndValidIsTrueOrderByVotesDesc(int page, int size) {
+    public PostPageableOutputDto readAllByVotesIsTrueAndValidIsTrueAndUserDeletedIsFalseOrderByVotesDesc(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAllByVotesIsTrueAndValidIsTrueOrderByVotesDesc(pageable);
+        Page<Post> posts = postRepository.findAllByVotesIsTrueAndValidIsTrueAndUserDeletedIsFalseOrderByVotesDesc(pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByValidOrderByCreatedAtDesc(String valid, int page, int size) {
+    public PostPageableOutputDto readAllByValidAndUserDeletedIsFalseOrderByCreatedAtDesc(String valid, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Boolean validBoolean = switch (valid) {
             case "true" -> true;
@@ -116,53 +116,53 @@ public class PostServiceImpl implements PostService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     String.format("Valid field must be true, false or null, not %s", valid));
         };
-        Page<Post> posts = postRepository.findAllByValidOrderByCreatedAtDesc(validBoolean, pageable);
+        Page<Post> posts = postRepository.findAllByValidAndUserDeletedIsFalseOrderByCreatedAtDesc(validBoolean, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByTitleContainingAndValidIsTrueOrderByCreatedAtDesc(String title, int page, int size) {
+    public PostPageableOutputDto readAllByTitleContainingAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAllByTitleContainingAndValidIsTrueOrderByCreatedAtDesc(title, pageable);
+        Page<Post> posts = postRepository.findAllByTitleContainingAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(title, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByCategoryIdAndValidIsTrueOrderByCreatedAtDesc(Long categoryId, int page, int size) {
+    public PostPageableOutputDto readAllByCategoryIdAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(Long categoryId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAllByCategoryIdAndValidIsTrueOrderByCreatedAtDesc(categoryId, pageable);
+        Page<Post> posts = postRepository.findAllByCategoryIdAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(categoryId, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByCategoryNameAndValidIsTrueOrderByCreatedAtDesc(String categoryName, int page, int size) {
+    public PostPageableOutputDto readAllByCategoryNameAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(String categoryName, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAllByCategoryNameAndValidIsTrueOrderByCreatedAtDesc(categoryName, pageable);
+        Page<Post> posts = postRepository.findAllByCategoryNameAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(categoryName, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByCategoryNameAndTitleContainingAndValidIsTrueOrderByCreatedAtDesc(String categoryName, String title, int page, int size) {
+    public PostPageableOutputDto readAllByCategoryNameAndTitleContainingAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(String categoryName, String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAllByCategoryNameAndTitleContainingAndValidIsTrueOrderByCreatedAtDesc(categoryName, title, pageable);
+        Page<Post> posts = postRepository.findAllByCategoryNameAndTitleContainingAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(categoryName, title, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByTagsIdAndValidIsTrueOrderByCreatedAtDesc(Long tagId, int page, int size) {
+    public PostPageableOutputDto readAllByTagsIdAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(Long tagId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAllByTagsIdAndValidIsTrueOrderByCreatedAtDesc(tagId, pageable);
+        Page<Post> posts = postRepository.findAllByTagsIdAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(tagId, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByTagsNameAndValidIsTrueOrderByCreatedAtDesc(String tagName, int page, int size) {
+    public PostPageableOutputDto readAllByTagsNameAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(String tagName, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAllByTagsNameAndValidIsTrueOrderByCreatedAtDesc(tagName, pageable);
+        Page<Post> posts = postRepository.findAllByTagsNameAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(tagName, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByTagsNameAndTitleContainingAndValidIsTrueOrderByCreatedAtDesc(String tagName, String title, int page, int size) {
+    public PostPageableOutputDto readAllByTagsNameAndTitleContainingAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(String tagName, String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAllByTagsNameAndTitleContainingAndValidIsTrueOrderByCreatedAtDesc(tagName, title, pageable);
+        Page<Post> posts = postRepository.findAllByTagsNameAndTitleContainingAndValidIsTrueAndUserDeletedIsFalseOrderByCreatedAtDesc(tagName, title, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto readAllByUserIdAndValidOrderByCreatedAtDesc(Long userId, String valid, int page, int size) {
+    public it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto readAllByUserIdAndValidAndUserDeletedIsFalseOrderByCreatedAtDesc(Long userId, String valid, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Boolean validBoolean = switch (valid) {
             case "true" -> true;
@@ -172,7 +172,7 @@ public class PostServiceImpl implements PostService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     String.format("Valid field must be true, false or null, not %s", valid));
         };
-        Page<Post> posts = postRepository.findAllByUserIdAndValidOrderByCreatedAtDesc(userId, validBoolean, pageable);
+        Page<Post> posts = postRepository.findAllByUserIdAndValidAndUserDeletedIsFalseOrderByCreatedAtDesc(userId, validBoolean, pageable);
         it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto postPageableOutputDto = new it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto();
         postPageableOutputDto.setPosts(posts.getContent()
             .stream()
@@ -182,9 +182,9 @@ public class PostServiceImpl implements PostService {
         return postPageableOutputDto;
     }
     @Override
-    public it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto readAllByUserUsernameAndValidOrderByCreatedAtDesc(String username, Boolean valid, int page, int size) {
+    public it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto readAllByUserUsernameAndValidAndUserDeletedIsFalseOrderByCreatedAtDesc(String username, Boolean valid, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAllByUserUsernameAndValidOrderByCreatedAtDesc(username, valid, pageable);
+        Page<Post> posts = postRepository.findAllByUserUsernameAndValidAndUserDeletedIsFalseOrderByCreatedAtDesc(username, valid, pageable);
         it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto postPageableOutputDto = new it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto();
         postPageableOutputDto.setPosts(posts.getContent()
             .stream()
@@ -194,9 +194,9 @@ public class PostServiceImpl implements PostService {
         return postPageableOutputDto;
     }
     @Override
-    public PostPageableOutputDto readAllByUserUsernameAndTitleContainingAndValidOrderByCreatedAtDesc(String username, String title, Boolean valid, int page, int size) {
+    public PostPageableOutputDto readAllByUserUsernameAndTitleContainingAndValidAndUserDeletedIsFalseOrderByCreatedAtDesc(String username, String title, Boolean valid, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAllByUserUsernameAndTitleContainingAndValidOrderByCreatedAtDesc(username, title, valid, pageable);
+        Page<Post> posts = postRepository.findAllByUserUsernameAndTitleContainingAndValidAndUserDeletedIsFalseOrderByCreatedAtDesc(username, title, valid, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
@@ -205,9 +205,17 @@ public class PostServiceImpl implements PostService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Post with id %d not found", id)));
         return modelMapper.map(post, PostOutputDto.class);
     }
+
     @Override
-    public PostOutputDto readByTitleAndValidIsTrue(String title) {
-        Post post = postRepository.findByTitleAndValidIsTrue(title)
+    public PostOutputDto readByIdAndUserDeletedIsFalse(Long id) {
+        Post post = postRepository.findByIdAndUserDeletedIsFalse(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Post with id %d not found", id)));
+        return modelMapper.map(post, PostOutputDto.class);
+    }
+
+    @Override
+    public PostOutputDto readByTitleAndValidIsTrueAndUserDeletedIsFalse(String title) {
+        Post post = postRepository.findByTitleAndValidIsTrueAndUserDeletedIsFalse(title)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Post with title %s not found", title)));
         return modelMapper.map(post, PostOutputDto.class);
     }
