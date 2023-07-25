@@ -3,7 +3,6 @@ package it.itj.academy.blogbe.dto.input;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,5 +17,6 @@ public class SignUpInputDto {
     private String username;
     private String password;
     private String avatar;
+    private boolean notifications;
     private Long role;
 }

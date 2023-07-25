@@ -28,21 +28,64 @@ public class CommentEmailUtil implements EmailUtil<Comment> {
     public String setMail(Comment comment){
         return String.format(
             """
-                <html>
-                    <body>
-                        <h1>Hi, %s.</h1>
-                        <div>
-                            <span>%s</span>
-                            has commented on your post: %s
-                        </div>
-                        <a href="http://localhost:4200/posts/details/%s/%s/%s">Click here to see the comment</a>
-                        <p>Thanks, Pitech Blog</p>
-                    </body>
+                <!DOCTYPE html>
+                <html lang="en">
+                  <head>
+                      <meta charset="UTF-8">
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      <title>New Comment Notification</title>
+                      <style>
+                        body,
+                        p,
+                        h1 {
+                          margin: 0;
+                          padding: 0;
+                        }
+                        body {
+                          font-family: Arial, sans-serif;
+                          line-height: 1.6;
+                        }
+                        .container {
+                          max-width: 600px;
+                          margin: 0 auto;
+                          padding: 20px;
+                          border: 1px solid #ddd;
+                          border-radius: 5px;
+                        }
+                        h1 {
+                          text-align: center;
+                        }
+                        p {
+                          margin-bottom: 20px;
+                        }
+                      </style>
+                  </head>
+                  <body>
+                    <div class="container">
+                      <h1>New Comment</h1>
+                      <p>Dear %s,</p>
+                      <p>%s has commented on your post titled "<strong>%s</strong>".</p>
+                      <p>Comment: "<em>%s</em>"</p>
+                      <p>To view the comment and respond, click the button below:</p>
+                      <p>
+                        <a href="http://localhost:4200/posts/details/%s/%s/%s">View comment</a>
+                      </p>
+                      <p>If the button above does not work, you can also copy and paste the following link into your browser:</p>
+                      <p>http://localhost:4200/posts/details/%s/%s/%s</p>
+                      <p>Thank you for using our platform!</p>
+                      <p>Best regards,</p>
+                      <p>Pitech Blog</p>
+                    </div>
+                  </body>
                 </html>
             """,
             comment.getPost().getUser().getUsername(),
             comment.getUser().getUsername(),
             comment.getPost().getTitle(),
+            comment.getContent(),
+            comment.getPost().getUser().getId(),
+            comment.getPost().getId(),
+            comment.getPost().getTitle().replace(" ", "-"),
             comment.getPost().getUser().getId(),
             comment.getPost().getId(),
             comment.getPost().getTitle().replace(" ", "-")

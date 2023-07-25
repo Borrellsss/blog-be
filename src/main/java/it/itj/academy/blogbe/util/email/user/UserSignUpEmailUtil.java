@@ -1,6 +1,6 @@
-package it.itj.academy.blogbe.util.email.post;
+package it.itj.academy.blogbe.util.email.user;
 
-import it.itj.academy.blogbe.entity.Post;
+import it.itj.academy.blogbe.entity.User;
 import it.itj.academy.blogbe.util.email.EmailUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -12,28 +12,27 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class PostDeletedEmailUtil implements EmailUtil<Post> {
+public class UserSignUpEmailUtil implements EmailUtil<User> {
     private final JavaMailSender mailSender;
 
     @Override
-    public void sendEmail(String to, Post post) throws MessagingException {
+    public void sendEmail(String to, User user) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         message.setFrom("no-reply@pietch.blog.com");
-        message.setSubject("Your post has been deleted");
-        message.setRecipients(MimeMessage.RecipientType.TO, post.getUser().getEmail());
-        message.setContent(setMail(post), "text/html; charset=utf-8");
+        message.setSubject("Welcome to Pitech Blog!");
+        message.setRecipients(MimeMessage.RecipientType.TO, to);
+        message.setContent(setMail(user), "text/html; charset=utf-8");
         mailSender.send(message);
     }
     @Override
-    public String setMail(Post post) {
-        return String.format(
-            """
+    public String setMail(User user) {
+        return String.format("""
                 <!DOCTYPE html>
                 <html lang="en">
                   <head>
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Post Deletion Due to Policy Violations</title>
+                    <title>Sign Up Confirmation</title>
                     <style>
                       body,
                       p,
@@ -62,26 +61,24 @@ public class PostDeletedEmailUtil implements EmailUtil<Post> {
                   </head>
                   <body>
                     <div class="container">
-                      <h1>Post Deletion</h1>
+                      <h1>Sign Up Confirmation</h1>
                       <p>Dear %s,</p>
+                      <p>Thank you for signing up with us! Your account is now active and ready to use.</p>
+                      <p>We're thrilled to have you join our community. If you have any questions or need assistance, feel free to contact our support team.</p>
+                      <p>Get started now and explore the exciting features of our platform.</p>
                       <p>
-                        We regret to inform you that your post titled "<strong>%s</strong>" has
-                        been deleted from our platform due to violations of our community guidelines and policies.
+                        <a href="http://localhost:4200/sign-in">Sign in now</a>
                       </p>
-                      <p>
-                        We take our guidelines seriously to maintain a safe and respectful environment for all users.
-                        Unfortunately, your post did not comply with our policies, leading to its removal.
-                      </p>
-                      <p>If you have any questions or concerns regarding this decision, please don't hesitate to contact our support team for further clarification.</p>
-                      <p>Thank you for your understanding.</p>
-                      <p>Best regards,</p>
+                      <p>If the button above does not work, you can also copy and paste the following link into your browser:</p>
+                      <p>http://localhost:4200/sign-in</p>
+                      <p>Thank you once again for joining us!</p>
+                      <p>Best regards, </p>
                       <p>Pitech Blog</p>
                     </div>
                   </body>
                 </html>
             """,
-            post.getUser().getUsername(),
-            post.getTitle()
+            user.getUsername()
         );
     }
 }

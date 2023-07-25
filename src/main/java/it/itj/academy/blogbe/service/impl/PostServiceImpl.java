@@ -94,19 +94,19 @@ public class PostServiceImpl implements PostService {
         return modelMapper.map(postRepository.save(post), PostOutputDto.class);
     }
     @Override
-    public PostPageableOutputDto readAllByValidIsTrueOrderByCommentsDesc(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public PostPageableOutputDto readAllByValidIsTrueOrderByCommentsDesc(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findAllByValidIsTrueOrderByCommentsDesc(pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByVotesIsTrueAndValidIsTrueOrderByVotesDesc(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public PostPageableOutputDto readAllByVotesIsTrueAndValidIsTrueOrderByVotesDesc(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findAllByVotesIsTrueAndValidIsTrueOrderByVotesDesc(pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByValidOrderByCreatedAtDesc(String valid, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public PostPageableOutputDto readAllByValidOrderByCreatedAtDesc(String valid, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Boolean validBoolean = switch (valid) {
             case "true" -> true;
@@ -120,49 +120,49 @@ public class PostServiceImpl implements PostService {
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByTitleContainingAndValidIsTrueOrderByCreatedAtDesc(String title, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public PostPageableOutputDto readAllByTitleContainingAndValidIsTrueOrderByCreatedAtDesc(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findAllByTitleContainingAndValidIsTrueOrderByCreatedAtDesc(title, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByCategoryIdAndValidIsTrueOrderByCreatedAtDesc(Long categoryId, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public PostPageableOutputDto readAllByCategoryIdAndValidIsTrueOrderByCreatedAtDesc(Long categoryId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findAllByCategoryIdAndValidIsTrueOrderByCreatedAtDesc(categoryId, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByCategoryNameAndValidIsTrueOrderByCreatedAtDesc(String categoryName, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public PostPageableOutputDto readAllByCategoryNameAndValidIsTrueOrderByCreatedAtDesc(String categoryName, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findAllByCategoryNameAndValidIsTrueOrderByCreatedAtDesc(categoryName, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByCategoryNameAndTitleContainingAndValidIsTrueOrderByCreatedAtDesc(String categoryName, String title, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public PostPageableOutputDto readAllByCategoryNameAndTitleContainingAndValidIsTrueOrderByCreatedAtDesc(String categoryName, String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findAllByCategoryNameAndTitleContainingAndValidIsTrueOrderByCreatedAtDesc(categoryName, title, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByTagsIdAndValidIsTrueOrderByCreatedAtDesc(Long tagId, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public PostPageableOutputDto readAllByTagsIdAndValidIsTrueOrderByCreatedAtDesc(Long tagId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findAllByTagsIdAndValidIsTrueOrderByCreatedAtDesc(tagId, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByTagsNameAndValidIsTrueOrderByCreatedAtDesc(String tagName, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public PostPageableOutputDto readAllByTagsNameAndValidIsTrueOrderByCreatedAtDesc(String tagName, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findAllByTagsNameAndValidIsTrueOrderByCreatedAtDesc(tagName, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public PostPageableOutputDto readAllByTagsNameAndTitleContainingAndValidIsTrueOrderByCreatedAtDesc(String tagName, String title, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public PostPageableOutputDto readAllByTagsNameAndTitleContainingAndValidIsTrueOrderByCreatedAtDesc(String tagName, String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findAllByTagsNameAndTitleContainingAndValidIsTrueOrderByCreatedAtDesc(tagName, title, pageable);
         return pageableUtil.postPageableOutputDto(posts);
     }
     @Override
-    public it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto readAllByUserIdAndValidOrderByCreatedAtDesc(Long userId, String valid, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto readAllByUserIdAndValidOrderByCreatedAtDesc(Long userId, String valid, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Boolean validBoolean = switch (valid) {
             case "true" -> true;
@@ -182,7 +182,7 @@ public class PostServiceImpl implements PostService {
         return postPageableOutputDto;
     }
     @Override
-    public it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto readAllByUserUsernameAndValidOrderByCreatedAtDesc(String username, Boolean valid, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto readAllByUserUsernameAndValidOrderByCreatedAtDesc(String username, Boolean valid, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findAllByUserUsernameAndValidOrderByCreatedAtDesc(username, valid, pageable);
         it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto postPageableOutputDto = new it.itj.academy.blogbe.dto.output.user.PostPageableOutputDto();
@@ -194,7 +194,7 @@ public class PostServiceImpl implements PostService {
         return postPageableOutputDto;
     }
     @Override
-    public PostPageableOutputDto readAllByUserUsernameAndTitleContainingAndValidOrderByCreatedAtDesc(String username, String title, Boolean valid, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public PostPageableOutputDto readAllByUserUsernameAndTitleContainingAndValidOrderByCreatedAtDesc(String username, String title, Boolean valid, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findAllByUserUsernameAndTitleContainingAndValidOrderByCreatedAtDesc(username, title, valid, pageable);
         return pageableUtil.postPageableOutputDto(posts);
@@ -229,23 +229,31 @@ public class PostServiceImpl implements PostService {
         return modelMapper.map(postRepository.save(post), PostOutputDto.class);
     }
     @Override
-    public void acceptOrReject(Long id, boolean valid) throws MessagingException {
+    public void acceptOrReject(Long id, boolean valid) {
         Post post = postRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Post with id %d not found", id)));
         post.setValid(valid);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         post.setVerifiedBy(user.getId());
         post.setVerifiedAt(LocalDate.now());
-        postValidatedEmailUtil.sendEmail(post.getUser().getEmail(), post);
+        try {
+            postValidatedEmailUtil.sendEmail(post.getUser().getEmail(), post);
+        } catch (MessagingException e) {
+            log.error("Error sending email: {}", e.getMessage());
+        }
         postRepository.save(post);
     }
     @Override
-    public void delete(Long id) throws MessagingException {
+    public void delete(Long id) {
         Post post = postRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Post with id %d not found", id)));
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!post.getUser().getId().equals(user.getId()) && user.getRole().getAuthority().equals("ROLE_MODERATOR")) {
-            postDeletedEmailUtil.sendEmail(post.getUser().getEmail(), post);
+            try {
+                postDeletedEmailUtil.sendEmail(post.getUser().getEmail(), post);
+            } catch (MessagingException e) {
+                log.error("Error sending email: {}", e.getMessage());
+            }
         }
         postRepository.delete(post);
     }

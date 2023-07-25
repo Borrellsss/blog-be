@@ -61,10 +61,12 @@ public class CommentServiceImpl implements CommentService {
         comment.setUser(userRepository.findById(commentInputDto.getUser()).get());
         comment.setPost(postRepository.findById(commentInputDto.getPost()).get());
         CommentOutputDto commentOutputDto = modelMapper.map(commentRepository.save(comment), CommentOutputDto.class);
-        try {
-            commentEmailUtil.sendEmail(comment.getPost().getUser().getEmail(), comment);
-        } catch (Exception e) {
-            log.error("Error sending email: " + e.getMessage());
+        if (comment.getPost().getUser().isNotifications() && !comment.getPost().getUser().getId().equals(comment.getUser().getId())) {
+            try {
+                commentEmailUtil.sendEmail(comment.getPost().getUser().getEmail(), comment);
+            } catch (Exception e) {
+                log.error("Error sending email: {}", e.getMessage());
+            }
         }
         return commentOutputDto;
     }
@@ -110,7 +112,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
         User loggedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!loggedUser.getId().equals(comment.getUser().getId())) {
+        if (!loggedUser.getId().equals(comment.getUser().getId()) && !loggedUser.getRole().getAuthority().equals("ROLE_MODERATOR")) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can't delete another user's comment");
         }
         commentRepository.delete(comment);

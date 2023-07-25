@@ -47,13 +47,13 @@ public class TagServiceImpl implements TagService {
         return modelMapper.map(tagRepository.save(modelMapper.map(tagInputDto, Tag.class)), TagOutputDto.class);
     }
     @Override
-    public TagPageableOutputDto readAll(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public TagPageableOutputDto readAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Tag> tags = tagRepository.findAll(pageable);
         return pageableUtil.tagPageableOutputDto(tags);
     }
     @Override
-    public TagPageableOutputDto readAllByOrderByName(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public TagPageableOutputDto readAllByOrderByName(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Tag> tags = tagRepository.findAllByOrderByName(pageable);
         return pageableUtil.tagPageableOutputDto(tags);
@@ -71,13 +71,13 @@ public class TagServiceImpl implements TagService {
         return modelMapper.map(tag, TagOutputDto.class);
     }
     @Override
-    public TagPageableOutputDto readAllByNameContainingOrderByName(String name, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public TagPageableOutputDto readAllByNameContainingOrderByName(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Tag> tags = tagRepository.findAllByNameContainingOrderByName(name, pageable);
         return pageableUtil.tagPageableOutputDto(tags);
     }
     @Override
-    public TagPageableOutputDto readAllByCategoryNameOrderByName(String categoryName, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public TagPageableOutputDto readAllByCategoryNameOrderByName(String categoryName, int page, int size) {
         if (!categoryRepository.existsByName(categoryName)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Category with name (%s) not found", categoryName));
         }

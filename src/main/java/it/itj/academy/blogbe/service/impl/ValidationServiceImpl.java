@@ -221,7 +221,6 @@ public class ValidationServiceImpl implements ValidationService {
     public void delete(String code) {
         Validation validation = validationRepository.findByCode(code)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Validation with code %s not found", code)));
-//        List<ErrorMessage> errorMessages = errorMessageRepository.
         validationRepository.delete(validation);
     }
 }

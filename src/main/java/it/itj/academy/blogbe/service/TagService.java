@@ -8,12 +8,12 @@ import java.lang.reflect.InvocationTargetException;
 
 public interface TagService {
     TagOutputDto create(TagInputDto tagInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
-    TagPageableOutputDto readAll(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
-    TagPageableOutputDto readAllByOrderByName(int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+    TagPageableOutputDto readAll(int page, int size);
+    TagPageableOutputDto readAllByOrderByName(int page, int size);
     TagOutputDto readById(Long id);
     TagOutputDto readByName(String name);
-    TagPageableOutputDto readAllByNameContainingOrderByName(String name, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
-    TagPageableOutputDto readAllByCategoryNameOrderByName(String categoryName, int page, int size) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+    TagPageableOutputDto readAllByNameContainingOrderByName(String name, int page, int size);
+    TagPageableOutputDto readAllByCategoryNameOrderByName(String categoryName, int page, int size);
     TagOutputDto update(Long id, TagInputDto tagInputDto);
     void delete(Long id);
 }

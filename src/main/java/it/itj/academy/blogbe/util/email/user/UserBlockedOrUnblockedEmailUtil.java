@@ -35,68 +35,115 @@ public class UserBlockedOrUnblockedEmailUtil implements EmailUtil<User> {
             template = String.format(
                 """
                     <!DOCTYPE html>
-                    <html>
-                      <head>
-                        <meta charset="UTF-8">
-                        <title>Account Blocked Due to Policy Violations</title>
-                      </head>
-                      <body style="font-family: Arial, sans-serif; background-color: #f2f2f2; color: #333; margin: 0; padding: 0;">
-                        <table cellpadding="0" cellspacing="0" border="0" align="center" style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #ccc;">
-                          <tr>
-                            <td style="padding: 20px;">
-                              <h2 style="color: #dd3d3d; margin-bottom: 20px;">Account Blocked Due to Policy Violations</h2>
-                              <p>Dear %s,</p>
-                              <p>
-                                We regret to inform you that your account on Pitech Blog has been blocked due to multiple violations of our policies.
-                                This decision was made to ensure the safety and integrity of our platform and its community.
-                              </p>
-                              <p>We take our policies very seriously, and unfortunately, your account's behavior has consistently violated our guidelines, prompting this action.</p>
-                              <p>
-                                If you believe that this action was taken in error or have any questions regarding the violations,
-                                please contact our support team at support@pitech.blog.com for further clarification.
-                              </p>
-                              <p>Please note that you will no longer be able to access your account and all associated services until the issue is resolved.</p>
-                              <p>We appreciate your understanding and adherence to our policies as we strive to create a safe and respectful environment for all users.</p>
-                              <p>Best regards,</p>
-                              <p>Pitech Blog</p>
-                            </td>
-                          </tr>
-                        </table>
-                      </body>
+                    <html lang="en">
+                    <head>
+                      <meta charset="UTF-8">
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      <title>Account Suspension Due to Policy Violations</title>
+                      <style>
+                        body,
+                        p,
+                        h1 {
+                          margin: 0;
+                          padding: 0;
+                        }
+                        body {
+                          font-family: Arial, sans-serif;
+                          line-height: 1.6;
+                        }
+                        .container {
+                          max-width: 600px;
+                          margin: 0 auto;
+                          padding: 20px;
+                          border: 1px solid #ddd;
+                          border-radius: 5px;
+                        }
+                        h1 {
+                          text-align: center;
+                          color: #007BFF;
+                        }
+                        p {
+                          margin-bottom: 20px;
+                        }
+                      </style>
+                    </head>
+                    <body>
+                      <div class="container">
+                        <h1>Account Suspension Due to Policy Violations</h1>
+                        <p>Dear %s,</p>
+                        <p>We regret to inform you that your account has been temporarily suspended due to violations of our platform's policies and guidelines.</p>
+                        <p>
+                          We take our community guidelines seriously to ensure a safe and respectful environment for all users.
+                          Unfortunately, your actions were in violation of these rules, leading to the necessary account suspension.
+                        </p>
+                        <p>
+                          During this suspension period, you will not be able to access your account and its features.
+                          To appeal this decision or seek further information, please contact our support team.
+                        </p>
+                        <p>We encourage you to review our policies and ensure compliance before your account can be reinstated.</p>
+                        <p>Thank you for your understanding.</p>
+                        <p>Best regards,</p>
+                        <p>Pitech Blog</p>
+                      </div>
+                    </body>
                     </html>
-                    """,
+                """,
                 user.getUsername()
             );
         } else {
             template = String.format(
                 """
                     <!DOCTYPE html>
-                    <html>
-                      <head>
-                        <meta charset="UTF-8">
-                        <title>Account Unblocked</title>
-                      </head>
-                      <body style="font-family: Arial, sans-serif; background-color: #f2f2f2; color: #333; margin: 0; padding: 0;">
-                        <table cellpadding="0" cellspacing="0" border="0" align="center" style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #ccc;">
-                          <tr>
-                            <td style="padding: 20px;">
-                              <h2 style="color: #3dd089; margin-bottom: 20px;">Account Unblocked</h2>
-                              <p>Dear %s,</p>
-                              <p>We are pleased to inform you that your account on Pitech Blog has been successfully unblocked.</p>
-                              <p>
-                                After reviewing the situation, we found that the issue leading to the blocking of your account
-                                has been resolved or deemed an isolated incident. As a result, we have lifted the restrictions on your account,
-                                and you can now access all features and services as before.
-                              </p>
-                              <p>We apologize for any inconvenience caused during the block period and appreciate your understanding throughout the process.</p>
-                              <p>If you have any questions or need further assistance, please don't hesitate to contact our support team at support@pitech.blog.</p>
-                              <p>Thank you for being a valued member of our community.</p>
-                              <p>Best regards,</p>
-                              <p>Pitech Blog</p>
-                            </td>
-                          </tr>
-                        </table>
-                      </body>
+                    <html lang="en">
+                    <head>
+                      <meta charset="UTF-8">
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      <title>Account Unblocked</title>
+                      <style>
+                        body,
+                        p,
+                        h1 {
+                          margin: 0;
+                          padding: 0;
+                        }
+                        body {
+                          font-family: Arial, sans-serif;
+                          line-height: 1.6;
+                        }
+                        .container {
+                          max-width: 600px;
+                          margin: 0 auto;
+                          padding: 20px;
+                          border: 1px solid #ddd;
+                          border-radius: 5px;
+                        }
+                        h1 {
+                          text-align: center;
+                        }
+                        p {
+                          margin-bottom: 20px;
+                        }
+                      </style>
+                    </head>
+                    <body>
+                      <div class="container">
+                        <h1>Account Unblocked</h1>
+                        <p>Dear %s,</p>
+                        <p>We are pleased to inform you that your account has been successfully unblocked.</p>
+                        <p>
+                          After reviewing the situation and your appeal, we have decided to lift the previous suspension,
+                          and you can now access your account and its features.
+                        </p>
+                        <p>
+                          <a href="http://localhost:4200/sign-in">Sign in now</a>
+                        </p>
+                        <p>We remind you to adhere to our community guidelines and policies to maintain a safe and respectful environment for all users.</p>
+                        <p>If you have any questions or concerns, feel free to reach out to our support team.</p>
+                        <p>Thank you for your understanding.</p>
+                        <p>Best regards,</p>
+                        <p>Pitech Blog</p>
+                      </div>
+                    </body>
                     </html>
                 """,
                 user.getUsername()

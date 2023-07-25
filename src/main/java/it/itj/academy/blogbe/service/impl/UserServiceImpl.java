@@ -19,7 +19,7 @@ import it.itj.academy.blogbe.util.PageableUtil;
 import it.itj.academy.blogbe.util.ValidatorUtil;
 import it.itj.academy.blogbe.util.email.user.UserBlockedOrUnblockedEmailUtil;
 import it.itj.academy.blogbe.util.email.user.UserDeletedEmailUtil;
-import jakarta.mail.MessagingException;
+import it.itj.academy.blogbe.util.email.user.UserSignUpEmailUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,11 +49,23 @@ public class UserServiceImpl implements UserService {
     private final JWTUtil jwtUtil;
     private final ValidatorUtil validatorUtil;
     private final PageableUtil pageableUtil;
+    private final UserSignUpEmailUtil userSignUpEmailUtil;
     private final UserBlockedOrUnblockedEmailUtil userBlockedOrUnblockedEmailUtil;
     private final UserDeletedEmailUtil userDeletedEmailUtil;
 
     @Override
     public SignUpOutputDto signUp(SignUpInputDto signUpInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        User user = modelMapper.map(signUpInputDto, User.class);
+        if (signUpInputDto.getRole() == null) {
+            if (SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) {
+                user.setRole(roleRepository.findByAuthority("ROLE_USER").get());
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role is required");
+            }
+        } else {
+            user.setRole(roleRepository.findById(signUpInputDto.getRole())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Role with id %d not found", signUpInputDto.getRole()))));
+        }
         Map<String, String> errors = validatorUtil.validate(signUpInputDto);
         if (!errors.isEmpty()) {
             throw new CustomInvalidFieldException(errors);
@@ -64,22 +76,16 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByEmail(signUpInputDto.getEmail()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Email (%s) already exists", signUpInputDto.getEmail()));
         }
-        User user = modelMapper.map(signUpInputDto, User.class);
-        if (signUpInputDto.getRole() == null) {
-            if (SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) {
-                user.setRole(roleRepository.findByAuthority("ROLE_USER").get());
-            } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role is required");
-            }
-        } else {
-            user.setRole(roleRepository.findById(signUpInputDto.getRole())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Role with id %d not found", signUpInputDto.getRole()))));
-        }
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        try {
+            userSignUpEmailUtil.sendEmail(user.getEmail(), user);
+        } catch (Exception e) {
+            log.error("Error sending email: {}", e.getMessage());
+        }
         return modelMapper.map(userRepository.save(user), SignUpOutputDto.class);
     }
     @Override
-    public SignInOutputDto signIn(SignInInputDto signInInputDto) throws JsonProcessingException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public SignInOutputDto signIn(SignInInputDto signInInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, JsonProcessingException {
         Map<String, String> errors = validatorUtil.validate(signInInputDto);
         if (!errors.isEmpty()) {
             throw new CustomInvalidFieldException(errors);
@@ -119,7 +125,7 @@ public class UserServiceImpl implements UserService {
         return pageableUtil.userPageableOutputDto(users);
     }
     @Override
-    public UserOutputDto readById(Long id) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public UserOutputDto readById(Long id) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d not found", id)));
         if (user.isDeleted()) {
@@ -128,7 +134,7 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, UserOutputDto.class);
     }
     @Override
-    public UserOutputDto readByUsername(String username) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    public UserOutputDto readByUsername(String username) {
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with username %s not found", username)));
         if (user.isDeleted()) {
@@ -175,7 +181,7 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(userRepository.save(user), UserOutputDto.class);
     }
     @Override
-    public void blockOrUnblock(Long id) throws MessagingException {
+    public void blockOrUnblock(Long id) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d not found", id)));
         if (user.isDeleted()) {
@@ -186,11 +192,15 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not authorized to perform this action");
         }
         user.setBlocked(!user.isBlocked());
-        userBlockedOrUnblockedEmailUtil.sendEmail(user.getEmail(), user);
+        try {
+            userBlockedOrUnblockedEmailUtil.sendEmail(user.getEmail(), user);
+        } catch (Exception e) {
+            log.error("Error sending email: {}", e.getMessage());
+        }
         userRepository.save(user);
     }
     @Override
-    public void delete(Long id) throws MessagingException {
+    public void delete(Long id) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d not found", id)));
         if (user.isDeleted()) {
@@ -202,7 +212,11 @@ public class UserServiceImpl implements UserService {
         }
         user.setDeleted(true);
         user.setNotifications(false);
-        userDeletedEmailUtil.sendEmail(user.getEmail(), user);
+        try {
+            userDeletedEmailUtil.sendEmail(user.getEmail(), user);
+        } catch (Exception e) {
+            log.error("Error sending email: {}", e.getMessage());
+        }
         userRepository.save(user);
     }
 }
