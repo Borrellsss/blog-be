@@ -52,6 +52,7 @@ public class UserSignUpEmailUtil implements EmailUtil<User> {
                         border-radius: 5px;
                       }
                       h1 {
+                        margin-bottom: 20px;
                         text-align: center;
                       }
                       p {

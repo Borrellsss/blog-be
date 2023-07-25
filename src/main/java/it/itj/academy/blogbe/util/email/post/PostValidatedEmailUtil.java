@@ -123,8 +123,8 @@ public class PostValidatedEmailUtil implements EmailUtil<Post> {
                             border-radius: 5px;
                           }
                           h1 {
+                            margin-bottom: 20px;
                             text-align: center;
-                            color: #007BFF;
                           }
                           p {
                             margin-bottom: 20px;

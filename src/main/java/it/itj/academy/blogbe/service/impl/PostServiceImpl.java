@@ -231,7 +231,7 @@ public class PostServiceImpl implements PostService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, String.format("Post with title %s already exists", postInputDto.getTitle()));
         }
         post.setContent(postInputDto.getContent());
-        if (!post.getValid()) {
+        if (post.getValid() != null && !post.getValid()) {
             post.setValid(null);
         }
         return modelMapper.map(postRepository.save(post), PostOutputDto.class);

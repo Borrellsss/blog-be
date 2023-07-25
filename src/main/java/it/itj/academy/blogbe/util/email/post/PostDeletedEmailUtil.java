@@ -53,6 +53,7 @@ public class PostDeletedEmailUtil implements EmailUtil<Post> {
                         border-radius: 5px;
                       }
                       h1 {
+                        margin-bottom: 20px;
                         text-align: center;
                       }
                       p {
