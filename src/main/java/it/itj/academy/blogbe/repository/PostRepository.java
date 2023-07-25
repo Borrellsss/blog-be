@@ -31,15 +31,15 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 p.*
             FROM post p
             INNER JOIN (SELECT
-                v.post_id,
-                COUNT(v.liked) AS count
-            FROM vote v
-            WHERE v.liked = true
-            GROUP BY v.post_id, v.liked) AS post_likes_count
+                            v.post_id,
+                            COUNT(v.liked) AS count
+                        FROM vote v
+                        WHERE v.liked = true
+                        GROUP BY v.post_id, v.liked) AS post_likes_count
                 ON p.id = post_likes_count.post_id
-            INNER JOIN user u 
+            INNER JOIN user u
                 ON u.id = p.user_id
-            WHERE p.valid = true 
+            WHERE p.valid = true
                 AND u.deleted = false
             ORDER BY post_likes_count.count DESC;
         """,

@@ -21,11 +21,11 @@ public class CommentEmailUtil implements EmailUtil<Comment> {
         message.setFrom("no-reply@pietch.blog.com");
         message.setSubject(String.format("%s has commented on your post", comment.getUser().getUsername()));
         message.setRecipients(MimeMessage.RecipientType.TO, comment.getPost().getUser().getEmail());
-        message.setContent(setMail(comment), "text/html; charset=utf-8");
+        message.setContent(setEmailTemplate(comment), "text/html; charset=utf-8");
         mailSender.send(message);
     }
     @Override
-    public String setMail(Comment comment){
+    public String setEmailTemplate(Comment comment){
         return String.format(
             """
                 <!DOCTYPE html>

@@ -27,11 +27,11 @@ public class UserDeletedEmailUtil implements EmailUtil<User> {
             message.setSubject("Your account has been successfully deleted");
         }
         message.setRecipients(MimeMessage.RecipientType.TO, to);
-        message.setContent(setMail(user), "text/html; charset=utf-8");
+        message.setContent(setEmailTemplate(user), "text/html; charset=utf-8");
         mailSender.send(message);
     }
     @Override
-    public String setMail(User user) {
+    public String setEmailTemplate(User user) {
         String template;
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!currentUser.getId().equals(user.getId())) {

@@ -21,6 +21,7 @@ public interface UserService {
     UserOutputDto readByUsername(String username);
     UserOutputDto update(Long id, UserInputDto userInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
     UserOutputDto updatePassword(Long id, UserInputDto userInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException;
+    void promoteOrDemote(Long id, Long roleId);
     void blockOrUnblock(Long id);
     void delete(Long id);
 }

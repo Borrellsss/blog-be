@@ -62,6 +62,11 @@ public class UserController {
     public ResponseEntity<UserOutputDto> updatePassword(@PathVariable Long id, @RequestBody UserInputDto userInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         return new ResponseEntity<>(userService.updatePassword(id, userInputDto), HttpStatus.OK);
     }
+    @PutMapping(value = "/{id}/role/{roleId}")
+    public ResponseEntity<UserOutputDto> promoteOrDemote(@PathVariable Long id, @PathVariable Long roleId) {
+        userService.promoteOrDemote(id, roleId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
     @PutMapping(value = "/{id}/block-or-unblock")
     public ResponseEntity<Void> blockOrUnblock(@PathVariable Long id) {
         userService.blockOrUnblock(id);

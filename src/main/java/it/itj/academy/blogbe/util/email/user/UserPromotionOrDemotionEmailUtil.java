@@ -1,45 +1,49 @@
-package it.itj.academy.blogbe.util.email.post;
+package it.itj.academy.blogbe.util.email.user;
 
-import it.itj.academy.blogbe.entity.Post;
+import it.itj.academy.blogbe.entity.Role;
+import it.itj.academy.blogbe.entity.User;
 import it.itj.academy.blogbe.util.email.EmailUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @RequiredArgsConstructor
+@Setter
 @Component
-public class PostValidatedEmailUtil implements EmailUtil<Post> {
+public class UserPromotionOrDemotionEmailUtil implements EmailUtil<User> {
     private final JavaMailSender mailSender;
+    private Boolean promotion;
+    private Role oldRole;
 
     @Override
-    public void sendEmail(String to, Post post) throws MessagingException {
+    public void sendEmail(String to, User user) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         message.setFrom("no-reply@pietch.blog.com");
-        if (post.getValid()) {
-            message.setSubject("Your post has been accepted!");
+        if (promotion) {
+            message.setSubject("Promotion Notification");
         } else {
-            message.setSubject("Your post has been rejected");
+            message.setSubject("Demotion Notification");
         }
-        message.setRecipients(MimeMessage.RecipientType.TO, post.getUser().getEmail());
-        message.setContent(setEmailTemplate(post), "text/html; charset=utf-8");
+        message.setRecipients(MimeMessage.RecipientType.TO, to);
+        message.setContent(setEmailTemplate(user), "text/html; charset=utf-8");
         mailSender.send(message);
     }
     @Override
-    public String setEmailTemplate(Post post) {
+    public String setEmailTemplate(User user) {
         String template;
-        if (!post.getValid()) {
-            template = String.format(
-                """
+        if (promotion) {
+            template = String.format("""
                     <!DOCTYPE html>
                     <html lang="en">
                       <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Post Rejection Notification</title>
+                        <title>Promotion Notification</title>
                         <style>
                           body,
                           p,
@@ -59,6 +63,7 @@ public class PostValidatedEmailUtil implements EmailUtil<Post> {
                             border-radius: 5px;
                           }
                           h1 {
+                            margin-bottom: 20px;
                             text-align: center;
                           }
                           p {
@@ -68,42 +73,39 @@ public class PostValidatedEmailUtil implements EmailUtil<Post> {
                       </head>
                       <body>
                         <div class="container">
-                          <h1>Post Rejection</h1>
+                          <h1>Congratulations!</h1>
                           <p>Dear %s,</p>
-                          <p>We regret to inform you that your post titled "<strong>%s</strong>" has been rejected due to certain issues that need attention.</p>
-                          <p>Please review the feedback provided and make the necessary modifications to your post to meet our community guidelines.</p>
-                          <p>Once you have made the changes, you can resubmit your post for review.</p>
-                          <p>To access your post and make modifications, click the button below:</p>
+                          <p>We are excited to inform you that you have been promoted from %s to %s in our community.</p>
                           <p>
-                            <a href="http://localhost:4200/posts/details/%s/%s/%s">Modify Post</a>
+                            Your hard work, dedication, and valuable contributions have not gone unnoticed,
+                            and we believe that you will continue to excel in your new role.
                           </p>
-                          <p>If the button above does not work, you can also copy and paste the following link into your browser:</p>
-                          <p>http://localhost:4200/posts/details/%s/%s/%s</p>
-                          <p>We appreciate your understanding and look forward to seeing your revised post.</p>
+                          <p>We are looking forward to seeing the positive impact you will make in this new position.</p>
+                          <p>Thank you for being an essential part of our community.</p>
                           <p>Best regards,</p>
                           <p>Pitech Blog</p>
                         </div>
                       </body>
                     </html>
                 """,
-                post.getUser().getUsername(),
-                post.getTitle(),
-                post.getUser().getId(),
-                post.getId(),
-                post.getTitle().replace(" ", "-"),
-                post.getUser().getId(),
-                post.getId(),
-                post.getTitle().replace(" ", "-")
+                user.getUsername(),
+                oldRole.getAuthority()
+                    .replace("ROLE", "")
+                    .replaceAll("_", " ")
+                    .toLowerCase(),
+                user.getRole().getAuthority()
+                    .replace("ROLE", "")
+                    .replaceAll("_", " ")
+                    .toLowerCase()
             );
         } else {
-            template = String.format(
-                """
+            template = String.format("""
                     <!DOCTYPE html>
                     <html lang="en">
                       <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Post Approval</title>
+                        <title>Demotion Notification</title>
                         <style>
                           body,
                           p,
@@ -133,31 +135,30 @@ public class PostValidatedEmailUtil implements EmailUtil<Post> {
                       </head>
                       <body>
                         <div class="container">
-                          <h1>Post Approval Notification</h1>
+                          <h1>Demotion Notification</h1>
                           <p>Dear %s,</p>
-                          <p>Congratulations! Your post titled "<strong>%s</strong>" has been approved and is now live on our platform.</p>
-                          <p>Thank you for contributing to our community. Your valuable content will be visible to other users.</p>
-                          <p>To view your approved post, click the button below:</p>
+                          <p>We regret to inform you that you have been demoted from %s to %s in our community.</p>
+                          <p>Your contributions and efforts have been appreciated, but due to certain reasons, we have had to make this decision.</p>
                           <p>
-                            <a href="http://localhost:4200/posts/details/%s/%s/%s">Click here to see your post</a>
+                            We encourage you to continue participating and contributing to the community,
+                            and we hope to see you grow and regain your previous position in the future.
                           </p>
-                          <p>If the button above does not work, you can also copy and paste the following link into your browser:</p>
-                          <p>http://localhost:4200/posts/details/%s/%s/%s</p>
-                          <p>We hope to see more of your engaging contributions in the future!</p>
+                          <p>Thank you for your understanding.</p>
                           <p>Best regards,</p>
                           <p>Pitech Blog</p>
                         </div>
                       </body>
                     </html>
                 """,
-                post.getUser().getUsername(),
-                post.getTitle(),
-                post.getUser().getId(),
-                post.getId(),
-                post.getTitle().replace(" ", "-"),
-                post.getUser().getId(),
-                post.getId(),
-                post.getTitle().replace(" ", "-")
+                user.getUsername(),
+                oldRole.getAuthority()
+                    .replace("ROLE", "")
+                    .replaceAll("_", " ")
+                    .toLowerCase(),
+                user.getRole().getAuthority()
+                    .replace("ROLE", "")
+                    .replaceAll("_", " ")
+                    .toLowerCase()
             );
         }
         return template;

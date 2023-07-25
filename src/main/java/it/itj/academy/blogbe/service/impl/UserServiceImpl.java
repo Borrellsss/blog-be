@@ -9,6 +9,7 @@ import it.itj.academy.blogbe.dto.output.user.SignInOutputDto;
 import it.itj.academy.blogbe.dto.output.user.SignUpOutputDto;
 import it.itj.academy.blogbe.dto.output.user.UserOutputDto;
 import it.itj.academy.blogbe.dto.output.user.UserPageableOutputDto;
+import it.itj.academy.blogbe.entity.Role;
 import it.itj.academy.blogbe.entity.User;
 import it.itj.academy.blogbe.exception.CustomInvalidFieldException;
 import it.itj.academy.blogbe.repository.RoleRepository;
@@ -19,6 +20,7 @@ import it.itj.academy.blogbe.util.PageableUtil;
 import it.itj.academy.blogbe.util.ValidatorUtil;
 import it.itj.academy.blogbe.util.email.user.UserBlockedOrUnblockedEmailUtil;
 import it.itj.academy.blogbe.util.email.user.UserDeletedEmailUtil;
+import it.itj.academy.blogbe.util.email.user.UserPromotionOrDemotionEmailUtil;
 import it.itj.academy.blogbe.util.email.user.UserSignUpEmailUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -50,9 +52,19 @@ public class UserServiceImpl implements UserService {
     private final ValidatorUtil validatorUtil;
     private final PageableUtil pageableUtil;
     private final UserSignUpEmailUtil userSignUpEmailUtil;
+    private final UserPromotionOrDemotionEmailUtil userPromotionOrDemotionEmailUtil;
     private final UserBlockedOrUnblockedEmailUtil userBlockedOrUnblockedEmailUtil;
     private final UserDeletedEmailUtil userDeletedEmailUtil;
 
+    private int calcRoleImportance(Role role) {
+        return switch (role.getAuthority()) {
+            case "ROLE_USER" -> 1;
+            case "ROLE_MODERATOR" -> 2;
+            case "ROLE_ADMIN" -> 3;
+            case "ROLE_SUPER_ADMIN" -> 4;
+            default -> 0;
+        };
+    }
     @Override
     public SignUpOutputDto signUp(SignUpInputDto signUpInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         User user = modelMapper.map(signUpInputDto, User.class);
@@ -198,6 +210,38 @@ public class UserServiceImpl implements UserService {
             log.error("Error sending email: {}", e.getMessage());
         }
         userRepository.save(user);
+    }
+    @Override
+    public void promoteOrDemote(Long id, Long roleId) {
+        User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d not found", id)));
+        if (user.isDeleted()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("User with id %d has been deleted", id));
+        }
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String currentUserRoleAuthority = currentUser.getRole().getAuthority();
+        Role role = roleRepository.findById(roleId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Role with id %d not found", roleId)));
+        if (currentUserRoleAuthority.equals("ROLE_ADMIN") || currentUserRoleAuthority.equals("ROLE_SUPER_ADMIN")) {
+            if (currentUserRoleAuthority.equals("ROLE_ADMIN")) {
+                if (user.getRole().getAuthority().equals("ROLE_SUPER_ADMIN")) {
+                    throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You cannot promote or demote a super admin");
+                } else if (role.getAuthority().equals("ROLE_SUPER_ADMIN")) {
+                    throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You cannot promote a user to super admin");
+                }
+            }
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to perform this action");
+        }
+        userPromotionOrDemotionEmailUtil.setOldRole(user.getRole());
+        userPromotionOrDemotionEmailUtil.setPromotion(calcRoleImportance(user.getRole()) <= calcRoleImportance(role));
+        user.setRole(role);
+        userRepository.save(user);
+        try {
+            userPromotionOrDemotionEmailUtil.sendEmail(user.getEmail(), user);
+        } catch (Exception e) {
+            log.error("Error sending email: {}", e.getMessage());
+        }
     }
     @Override
     public void delete(Long id) {

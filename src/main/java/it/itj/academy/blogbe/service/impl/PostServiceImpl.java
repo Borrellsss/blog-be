@@ -31,6 +31,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -240,8 +241,11 @@ public class PostServiceImpl implements PostService {
     public void acceptOrReject(Long id, boolean valid) {
         Post post = postRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("Post with id %d not found", id)));
-        post.setValid(valid);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (user.getId().equals(post.getUser().getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot accept or reject your own post");
+        }
+        post.setValid(valid);
         post.setVerifiedBy(user.getId());
         post.setVerifiedAt(LocalDate.now());
         try {

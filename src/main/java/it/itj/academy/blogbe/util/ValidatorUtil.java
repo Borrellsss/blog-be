@@ -169,6 +169,16 @@ public class ValidatorUtil {
                 .map(ErrorMessage::getMessage).orElse("Field cannot be empty");
             addError(field.getName(), NOT_EMPTY, message, errors);
         }
+        if (validation.getMin() != null && value.size() < validation.getMin()) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + MIN)
+                .map(ErrorMessage::getMessage).orElse(String.format("Field must have at least %d elements", validation.getMin()));
+            addError(field.getName(), MIN, message, errors);
+        }
+        if (validation.getMax() != null && value.size() > validation.getMax()) {
+            message = errorMessageRepository.findByErrorType(errorTypePrefix + MAX)
+                    .map(ErrorMessage::getMessage).orElse(String.format("Field must have at most %d elements", validation.getMax()));
+            addError(field.getName(), MAX, message, errors);
+        }
     }
     private void addError(String field, String type, String message, Map<String, String> errors) {
         errors.put(String.format("%s (%s)", field, type), message);

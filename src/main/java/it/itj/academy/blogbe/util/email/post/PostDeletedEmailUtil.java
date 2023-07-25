@@ -21,11 +21,11 @@ public class PostDeletedEmailUtil implements EmailUtil<Post> {
         message.setFrom("no-reply@pietch.blog.com");
         message.setSubject("Your post has been deleted");
         message.setRecipients(MimeMessage.RecipientType.TO, post.getUser().getEmail());
-        message.setContent(setMail(post), "text/html; charset=utf-8");
+        message.setContent(setEmailTemplate(post), "text/html; charset=utf-8");
         mailSender.send(message);
     }
     @Override
-    public String setMail(Post post) {
+    public String setEmailTemplate(Post post) {
         return String.format(
             """
                 <!DOCTYPE html>

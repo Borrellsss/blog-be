@@ -4,5 +4,5 @@ import jakarta.mail.MessagingException;
 
 public interface EmailUtil<T> {
     void sendEmail(String to, T entity) throws MessagingException;
-    String setMail(T entity);
+    String setEmailTemplate(T entity);
 }

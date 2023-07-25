@@ -21,11 +21,11 @@ public class UserSignUpEmailUtil implements EmailUtil<User> {
         message.setFrom("no-reply@pietch.blog.com");
         message.setSubject("Welcome to Pitech Blog!");
         message.setRecipients(MimeMessage.RecipientType.TO, to);
-        message.setContent(setMail(user), "text/html; charset=utf-8");
+        message.setContent(setEmailTemplate(user), "text/html; charset=utf-8");
         mailSender.send(message);
     }
     @Override
-    public String setMail(User user) {
+    public String setEmailTemplate(User user) {
         return String.format("""
                 <!DOCTYPE html>
                 <html lang="en">
