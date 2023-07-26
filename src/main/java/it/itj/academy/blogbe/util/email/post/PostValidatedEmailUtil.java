@@ -1,21 +1,21 @@
 package it.itj.academy.blogbe.util.email.post;
 
 import it.itj.academy.blogbe.entity.Post;
-import it.itj.academy.blogbe.util.email.EmailUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class PostValidatedEmailUtil implements EmailUtil<Post> {
+public class PostValidatedEmailUtil {
     private final JavaMailSender mailSender;
 
-    @Override
+    @Async
     public void sendEmail(String to, Post post) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         message.setFrom("no-reply@pietch.blog.com");
@@ -28,7 +28,6 @@ public class PostValidatedEmailUtil implements EmailUtil<Post> {
         message.setContent(setEmailTemplate(post), "text/html; charset=utf-8");
         mailSender.send(message);
     }
-    @Override
     public String setEmailTemplate(Post post) {
         String template;
         if (!post.getValid()) {

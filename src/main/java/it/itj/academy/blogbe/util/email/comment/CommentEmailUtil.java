@@ -1,21 +1,21 @@
 package it.itj.academy.blogbe.util.email.comment;
 
 import it.itj.academy.blogbe.entity.Comment;
-import it.itj.academy.blogbe.util.email.EmailUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class CommentEmailUtil implements EmailUtil<Comment> {
+public class CommentEmailUtil {
     private final JavaMailSender mailSender;
 
-    @Override
+    @Async
     public void sendEmail(String to, Comment comment) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         message.setFrom("no-reply@pietch.blog.com");
@@ -24,7 +24,6 @@ public class CommentEmailUtil implements EmailUtil<Comment> {
         message.setContent(setEmailTemplate(comment), "text/html; charset=utf-8");
         mailSender.send(message);
     }
-    @Override
     public String setEmailTemplate(Comment comment){
         return String.format(
             """

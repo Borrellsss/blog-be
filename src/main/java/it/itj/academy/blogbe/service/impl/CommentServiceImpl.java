@@ -12,7 +12,7 @@ import it.itj.academy.blogbe.repository.UserRepository;
 import it.itj.academy.blogbe.service.CommentService;
 import it.itj.academy.blogbe.util.PageableUtil;
 import it.itj.academy.blogbe.util.ValidatorUtil;
-import it.itj.academy.blogbe.util.email.EmailUtil;
+import it.itj.academy.blogbe.util.email.comment.CommentEmailUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class CommentServiceImpl implements CommentService {
     private final ModelMapper modelMapper;
     private final ValidatorUtil validatorUtil;
     private final PageableUtil pageableUtil;
-    private final EmailUtil<Comment> commentEmailUtil;
+    private final CommentEmailUtil commentEmailUtil;
 
     @Override
     public CommentOutputDto create(CommentInputDto commentInputDto) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {

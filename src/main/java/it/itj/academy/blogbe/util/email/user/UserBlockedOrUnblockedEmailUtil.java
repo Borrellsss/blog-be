@@ -1,21 +1,21 @@
 package it.itj.academy.blogbe.util.email.user;
 
 import it.itj.academy.blogbe.entity.User;
-import it.itj.academy.blogbe.util.email.EmailUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class UserBlockedOrUnblockedEmailUtil implements EmailUtil<User> {
+public class UserBlockedOrUnblockedEmailUtil {
     private final JavaMailSender mailSender;
 
-    @Override
+    @Async
     public void sendEmail(String to, User user) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         message.setFrom("no-reply@pietch.blog.com");
@@ -28,7 +28,6 @@ public class UserBlockedOrUnblockedEmailUtil implements EmailUtil<User> {
         message.setContent(setEmailTemplate(user), "text/html; charset=utf-8");
         mailSender.send(message);
     }
-    @Override
     public String setEmailTemplate(User user) {
         String template;
         if (user.isBlocked()) {
@@ -59,8 +58,8 @@ public class UserBlockedOrUnblockedEmailUtil implements EmailUtil<User> {
                           border-radius: 5px;
                         }
                         h1 {
+                          margin-bottom: 20px;
                           text-align: center;
-                          color: #007BFF;
                         }
                         p {
                           margin-bottom: 20px;
@@ -69,7 +68,7 @@ public class UserBlockedOrUnblockedEmailUtil implements EmailUtil<User> {
                     </head>
                     <body>
                       <div class="container">
-                        <h1>Account Suspension Due to Policy Violations</h1>
+                        <h1>Account Suspension</h1>
                         <p>Dear %s,</p>
                         <p>We regret to inform you that your account has been temporarily suspended due to violations of our platform's policies and guidelines.</p>
                         <p>
