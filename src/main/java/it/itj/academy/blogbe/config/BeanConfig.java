@@ -48,49 +48,188 @@ public class BeanConfig {
             }))
             .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
-                // TESTING ----------------------------------------------------------------
+                // ERROR ///////////////////////////////////////////////////////////////////////////////////////////////
                 authorizationManagerRequestMatcherRegistry
-                    .requestMatchers("/**")
+                    .requestMatchers("/error/**")
                     .permitAll();
-                // POST -------------------------------------------------------------------
-//                authorizationManagerRequestMatcherRegistry
-//                    .requestMatchers(HttpMethod.POST,
-//                        "/users/sign-up",
-//                        "/users/sign-in",
-//                        "/error/**")
-//                    .permitAll();
-                // GET --------------------------------------------------------------------
-//                authorizationManagerRequestMatcherRegistry
-//                    .requestMatchers(
-//                        HttpMethod.GET,
-//                        "/users",
-//                        "/users/{id}",
-//                        "/users/username/{username}",
-//                        "/validations/{field}/{value}"
-//                    )
-//                    .hasAnyRole("USER", "MODERATOR", "ADMIN", "SUPER_ADMIN");
-                // UPDATE -----------------------------------------------------------------
-//                authorizationManagerRequestMatcherRegistry
-//                    .requestMatchers(
-//                        HttpMethod.PUT,
-//                        "/users/id/{id}"
-//                    )
-//                    .hasAnyRole("USER", "MODERATOR", "ADMIN", "SUPER_ADMIN");
-                // DELETE -----------------------------------------------------------------
-//                authorizationManagerRequestMatcherRegistry
-//                    .requestMatchers(
-//                        HttpMethod.DELETE,
-//                        "/users/{id}"
-//                    )
-//                    .hasAnyRole("USER", "MODERATOR", "ADMIN", "SUPER_ADMIN");
-                // ALL --------------------------------------------------------------------
-//                authorizationManagerRequestMatcherRegistry
-//                    .requestMatchers(
-//                        "roles/**",
-//                        "/validations/**",
-//                        "error-messages/**"
-//                    )
-//                    .hasAnyRole("ADMIN", "SUPER_ADMIN");
+                // USER ////////////////////////////////////////////////////////////////////////////////////////////////
+                // POST
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.POST,
+                        "/users/sign-up",
+                        "/users/sign-in"
+                    ).permitAll();
+                // GET
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.GET,
+                        "/users/**"
+                    ).authenticated();
+                // PUT
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.PUT,
+                        "/users/{id}",
+                        "/users/{id}/password"
+                    ).authenticated();
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.PUT,
+                        "/users/{id}/role/{roleId}"
+                    ).hasAnyRole("ADMIN", "SUPER_ADMIN");
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.PUT,
+                        "/users/{id}/block-or-unblock"
+                    ).hasRole("MODERATOR");
+                // DELETE
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.DELETE,
+                        "/users/{id}"
+                    ).authenticated();
+
+                // ROLE ////////////////////////////////////////////////////////////////////////////////////////////////
+                // POST
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.POST,
+                        "/roles"
+                    ).hasAnyRole("ADMIN", "SUPER_ADMIN");
+                // GET
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.GET,
+                        "/roles/**"
+                    ).authenticated();
+                // PUT
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.PUT,
+                        "/roles/{id}"
+                    ).hasAnyRole("ADMIN", "SUPER_ADMIN");
+                // DELETE
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.DELETE,
+                        "/roles/{id}"
+                    ).hasAnyRole("ADMIN", "SUPER_ADMIN");
+
+                // CATEGORY ////////////////////////////////////////////////////////////////////////////////////////////
+                // POST
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.POST,
+                        "/categories"
+                    ).hasAnyRole("MODERATOR", "ADMIN", "SUPER_ADMIN");
+                // GET
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.GET,
+                        "/categories/**"
+                    ).authenticated();
+                // PUT
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.PUT,
+                        "/categories/{id}"
+                    ).hasAnyRole("MODERATOR", "ADMIN", "SUPER_ADMIN");
+                // DELETE
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.DELETE,
+                        "/categories/{id}"
+                    ).hasAnyRole("MODERATOR", "ADMIN", "SUPER_ADMIN");
+
+                // TAG /////////////////////////////////////////////////////////////////////////////////////////////////
+                // POST
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.POST,
+                        "/tags"
+                    ).hasAnyRole("MODERATOR", "ADMIN", "SUPER_ADMIN");
+                // GET
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.GET,
+                        "/tags/**"
+                    ).authenticated();
+                // PUT
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.PUT,
+                        "/tags/{id}"
+                    ).hasAnyRole("MODERATOR", "ADMIN", "SUPER_ADMIN");
+                // DELETE
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.DELETE,
+                        "/tags/{id}"
+                    ).hasAnyRole("MODERATOR", "ADMIN", "SUPER_ADMIN");
+
+                // POST ////////////////////////////////////////////////////////////////////////////////////////////////
+                // POST
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.POST,
+                        "/posts"
+                    ).authenticated();
+                // GET
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.GET,
+                        "/posts/**"
+                    ).authenticated();
+                // PUT
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.PUT,
+                        "/posts/{id}"
+                    ).authenticated();
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.PUT,
+                        "/posts/{id}/accept",
+                        "/posts/{id}/reject"
+                    ).hasRole("MODERATOR");
+                // DELETE
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.DELETE,
+                        "/posts/{id}"
+                    ).authenticated();
+
+                // VOTE ////////////////////////////////////////////////////////////////////////////////////////////////
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers("/votes/**")
+                    .authenticated();
+
+                // COMMENT /////////////////////////////////////////////////////////////////////////////////////////////
+                // POST
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.POST,
+                        "/comments"
+                    ).authenticated();
+                // GET
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.GET,
+                        "/comments/**"
+                    ).authenticated();
+                // PUT
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.PUT,
+                        "/comments/{id}"
+                    ).authenticated();
+                // DELETE
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.DELETE,
+                        "/comments/{id}"
+                    ).authenticated();
+
+                // VALIDATION //////////////////////////////////////////////////////////////////////////////////////////
+                // POST
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.POST,
+                        "/validations"
+                    ).hasAnyRole("ADMIN", "SUPER_ADMIN");
+                // GET
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.GET,
+                        "/validations/**"
+                    ).permitAll();
+                // PUT
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.PUT,
+                        "/validations/{code}"
+                    ).hasAnyRole("ADMIN", "SUPER_ADMIN");
+                // DELETE
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.DELETE,
+                        "/validations/{code}"
+                    ).hasAnyRole("ADMIN", "SUPER_ADMIN");
+
+                // ERROR MESSAGE ///////////////////////////////////////////////////////////////////////////////////////
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers("/error-messages/**")
+                    .hasAnyRole("ADMIN", "SUPER_ADMIN");
             }).addFilterBefore((ServletRequest servletRequest,ServletResponse servletResponse, FilterChain filterChain) -> {
                 HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
                 String authorization = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
